@@ -4,9 +4,8 @@ import {LangChainOptions, LangChainService} from './services/langchain.service';
 /**
  * Binding key for LangChain service
  */
-export const LANGCHAIN_SERVICE = BindingKey.create<LangChainService>(
-  'services.langchain',
-);
+export const LANGCHAIN_SERVICE =
+  BindingKey.create<LangChainService>('services.langchain');
 
 /**
  * Binding key for LangChain service options

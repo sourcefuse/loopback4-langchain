@@ -17,7 +17,6 @@ describe('LangChainService', () => {
     mockInvoke.resolves({content: 'Default mock response'});
 
     // Create a stub for ChatGroq constructor
-    const mockChatModel = {invoke: mockInvoke};
     chatGroqStub = sinon.stub(ChatGroq.prototype, 'invoke');
     chatGroqStub.callsFake(mockInvoke);
 

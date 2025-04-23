@@ -1,5 +1,8 @@
 import {Provider, inject} from '@loopback/core';
-import {LangChainService, LangChainOptions} from '../services/langchain.service';
+import {
+  LangChainService,
+  LangChainOptions,
+} from '../services/langchain.service';
 import {LANGCHAIN_OPTIONS} from '../keys';
 
 export class LangChainServiceProvider implements Provider<LangChainService> {

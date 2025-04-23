@@ -13,13 +13,13 @@ export interface LangChainOptions {
 @injectable({scope: BindingScope.SINGLETON})
 export class LangChainService {
   private chatModel: ChatGroq;
-  
+
   constructor(options: LangChainOptions = {}) {
-    const apiKey = options.apiKey || process.env.GROQ_API_KEY;
+    const apiKey = options.apiKey ?? process.env.GROQ_API_KEY;
     // Default to Llama 3 8B model
-    const modelName = options.model || 'llama3-8b-8192';
+    const modelName = options.model ?? 'llama3-8b-8192';
     const temperature = options.temperature ?? 0.7;
-    
+
     // Initialize Groq chat model
     this.chatModel = new ChatGroq({
       apiKey: apiKey,
@@ -34,7 +34,7 @@ export class LangChainService {
   getChatModel(): ChatGroq {
     return this.chatModel;
   }
-  
+
   /**
    * Generate text using the chat model
    * @param prompt Text prompt
@@ -43,7 +43,7 @@ export class LangChainService {
     const response = await this.chatModel.invoke(prompt);
     return response.content.toString();
   }
-  
+
   /**
    * Check if the LangChain service is properly initialized
    */
