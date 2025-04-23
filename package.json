@@ -1,0 +1,53 @@
+{
+  "name": "loopback4-langchain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "lb-tsc",
+    "build:watch": "lb-tsc --watch",
+    "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
+    "lint": "npm run prettier:check && npm run eslint",
+    "lint:fix": "npm run eslint:fix && npm run prettier:fix",
+    "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
+    "prettier:check": "npm run prettier:cli -- -l",
+    "prettier:fix": "npm run prettier:cli -- --write",
+    "eslint": "lb-eslint --report-unused-disable-directives .",
+    "eslint:fix": "npm run eslint -- --fix",
+    "pretest": "npm run clean && npm run build",
+    "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
+    "posttest": "npm run lint",
+    "prepublishOnly": "npm run test",
+    "coverage": "nyc npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sourcefuse/loopback4-langchain.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sourcefuse/loopback4-langchain/issues"
+  },
+  "homepage": "https://github.com/sourcefuse/loopback4-langchain#readme",
+  "devDependencies": {
+    "@loopback/build": "^11.0.11",
+    "@loopback/eslint-config": "^15.0.5",
+    "@loopback/testlab": "^7.0.12",
+    "@types/node": "^22.14.1",
+    "eslint": "^8.57.1",
+    "sinon": "^20.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@langchain/groq": "^0.2.2",
+    "@loopback/boot": "^7.0.13",
+    "@loopback/core": "^6.1.10",
+    "@loopback/rest": "^14.0.13",
+    "langchain": "^0.3.23",
+    "nyc": "^17.1.0"
+  }
+}
