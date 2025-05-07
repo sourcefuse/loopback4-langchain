@@ -5,6 +5,7 @@ import {
 } from '../services/langchain.service';
 import * as sinon from 'sinon';
 import {ChatGroq} from '@langchain/groq';
+import {Tool} from 'langchain/tools';
 
 describe('LangChainService', () => {
   let service: LangChainService;
@@ -26,8 +27,9 @@ describe('LangChainService', () => {
       model: 'test-model',
       temperature: 0.5,
     };
+    const tools: Tool[] = [];
 
-    service = new LangChainService(options);
+    service = new LangChainService(options, tools);
   });
 
   afterEach(() => {

@@ -1,5 +1,6 @@
 import {BindingScope, injectable} from '@loopback/core';
 import {ChatGroq} from '@langchain/groq';
+import {Tool} from 'langchain/tools';
 
 /**
  * LangChain service options
@@ -14,7 +15,7 @@ export interface LangChainOptions {
 export class LangChainService {
   private chatModel: ChatGroq;
 
-  constructor(options: LangChainOptions = {}) {
+  constructor(options: LangChainOptions = {}, tools: Tool[]) {
     const apiKey = options.apiKey ?? process.env.GROQ_API_KEY;
     // Default to Llama 3 8B model
     const modelName = options.model ?? 'llama3-8b-8192';
@@ -26,6 +27,13 @@ export class LangChainService {
       model: modelName,
       temperature: temperature,
     });
+
+    // Initialize tools
+    this.chatModel.bindTools(tools);
+    const toolsByName = Object.fromEntries(
+      tools.map(tool => [tool.name, tool]),
+    );
+    console.log(toolsByName);
   }
 
   /**
