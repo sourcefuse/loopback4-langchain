@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "lb-tsc",
-    "build:watch": "lb-tsc --watch",
+    "build": "npm run clean && lb-tsc",
+    "build:watch": "npm run clean && lb-tsc --watch",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "lint": "npm run prettier:check && npm run eslint",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
