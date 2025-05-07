@@ -1,0 +1,32 @@
+# !/bin/sh
+# . "$(dirname "$0")/_/husky.sh"
+
+# print current NPM and Node version
+npm --version;
+node --version;
+
+arch="$(uname -m)"  # -i is only linux, -m is linux and apple
+if test "$arch" = x86_64; then
+  npm test
+elif test "$arch" = arm64; then
+  echo "Running command for the MacM1"
+  arch -x86_64 npm test
+else
+  echo "unknown arch $arch"
+  exit 1
+fi
+
+# Section for git-secrets
+command -v git-secrets;
+retval=$?;
+if [ $retval -ne 0 ]; then
+    echo "git-secrets is not installed. Please run 'brew install git-secrets' or visit https://github.com/awslabs/git-secrets#installing-git-secrets"
+    exit 1
+fi
+
+# Initialise git-secrets configuration
+git-secrets --register-aws > /dev/null
+
+echo "Running git-secrets..."
+# Scans all files that are about to be committed.
+git-secrets --pre_commit_hook -- "$@"

@@ -1,0 +1,25 @@
+#!/bin/sh
+# . "$(dirname "$0")/_/husky.sh"
+
+if sh -c ": >/dev/tty" >/dev/null 2>/dev/null; then
+    exec < /dev/tty && npx cz --hook || true
+else
+    echo "dev/tty no available skipping it"
+fi
+
+#exec < /dev/tty && npx cz --hook || true
+
+# Section for git-secrets
+command -v git-secrets;
+retval=$?;
+if [ $retval -ne 0 ]; then
+    echo "git-secrets is not installed. Please run 'brew install git-secrets' or visit https://github.com/awslabs/git-secrets#installing-git-secrets"
+    exit 1
+fi
+
+# Initialise git-secrets configuration
+git-secrets --register-aws > /dev/null
+
+echo "Running git-secrets..."
+# Determines if merging in a commit will introduce tainted history.
+git-secrets --prepare_commit_msg_hook -- "$@"
