@@ -34,8 +34,17 @@ export class MyController {
   ) {}
 
   async someMethod() {
-    const result = await this.langChainService.query('Your prompt here');
+    const result = await this.langChainService.generateText('Your prompt here');
     return result;
+  }
+
+  async parseMethod() {
+    // Using an output parser
+    const parsedResult = await this.langChainService.generateAndParse(
+      'Generate a JSON object with name and age fields',
+      'json-parser' // Name of your registered output parser
+    );
+    return parsedResult;
   }
 }
 ```
@@ -60,10 +69,74 @@ this.bind(LangChainBindings.CONFIG).to(config);
 
 - `LangChainComponent`: The main component that provides LangChain integration
 
+### Services
+
+- `LangChainService`: The main service that provides access to LangChain functionality
+
+  Methods:
+  - `getChatModel()`: Get the LangChain Groq chat model instance
+  - `generateText(prompt: string)`: Generate text using the chat model
+  - `getOutputParsers()`: Get all registered output parsers
+  - `getOutputParserByName(name: string)`: Get an output parser by name
+  - `generateAndParse(prompt: string, parserName: string)`: Generate text and parse the output using the specified parser
+  - `isInitialized()`: Check if the LangChain service is properly initialized
+
 ### Bindings
 
 - `LangChainBindings.LANGCHAIN_SERVICE`: Binding key for the LangChain service
 - `LangChainBindings.CONFIG`: Binding key for the LangChain configuration
+- `LangChainBindings.OUTPUT_PARSER`: Binding key for the output parser
+
+### Decorators
+
+- `@langchainTools()`: Decorator for marking a class as a LangChain tool. This decorator registers the class as an extension for the langchain.tools extension point.
+
+Example:
+
+```typescript
+import {langchainTools, Tool} from 'loopback4-langchain';
+
+@langchainTools()
+export class MyTool implements Tool {
+  name = 'my-tool';
+  description = 'A custom tool';
+  schema = {
+    type: 'object',
+    properties: {
+      input: {
+        type: 'string',
+      },
+    },
+    required: ['input'],
+  };
+
+  async run(args: {input: string}): Promise<string> {
+    return `Processed: ${args.input}`;
+  }
+}
+```
+
+- `@langchainOutputParsers()`: Decorator for marking a class as a LangChain output parser. This decorator registers the class as an extension for the langchain.output_parsers extension point.
+
+Example:
+
+```typescript
+import {langchainOutputParsers, OutputParser} from 'loopback4-langchain';
+
+@langchainOutputParsers()
+export class JsonOutputParser implements OutputParser {
+  name = 'json-parser';
+  description = 'Parses JSON output from LLM';
+
+  async parse(text: string): Promise<any> {
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      throw new Error(`Failed to parse JSON: ${error.message}`);
+    }
+  }
+}
+```
 
 ## License
 

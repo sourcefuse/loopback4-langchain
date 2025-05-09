@@ -55,8 +55,10 @@
     "@loopback/rest": "^14.0.13",
     "@loopback/rest-explorer": "^7.0.13",
     "@loopback/service-proxy": "^7.0.13",
+    "loopback-connector-redis": "^3.0.0",
     "loopback4-langchain": "^1.0.0",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@loopback/build": "^11.0.11",

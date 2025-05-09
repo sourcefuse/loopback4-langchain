@@ -11,7 +11,7 @@ loopback4-langchain is an extension for [LoopBack 4](https://loopback.io/doc/en/
 - 🤖 Seamless integration with LangChain in Loopback 4 applications
 - 🔌 Easy-to-use component architecture
 - 🧩 Extensible tool system for custom LLM capabilities
-- 🔄 Built-in support for Groq LLM provider
+- 🔄 Built-in support for multiple LLM providers (Groq, Anthropic)
 - 🛠️ TypeScript support for type safety
 
 ## 🧩 Project Structure
@@ -58,12 +58,24 @@ this.component(LangChainComponent);
 import {LangChainBindings, LangChainOptions} from 'loopback4-langchain';
 
 // In your application class:
-const options: LangChainOptions = {
+// For Groq (default provider)
+const groqOptions: LangChainOptions = {
+  provider: 'groq',                  // Specify the provider (optional, defaults to 'groq')
   apiKey: process.env.GROQ_API_KEY,  // Or provide directly
-  model: 'llama3-8b-8192',           // Default model
+  model: 'llama3-8b-8192',           // Default model for Groq
   temperature: 0.7,                  // Default temperature
 };
-this.bind(LangChainBindings.LANGCHAIN_OPTIONS).to(options);
+
+// OR for Anthropic
+const anthropicOptions: LangChainOptions = {
+  provider: 'anthropic',                  // Specify the provider as 'anthropic'
+  apiKey: process.env.ANTHROPIC_API_KEY,  // Or provide directly
+  model: 'claude-3-haiku-20240307',       // Default model for Anthropic
+  temperature: 0.7,                       // Default temperature
+};
+
+// Bind the options to the application
+this.bind(LangChainBindings.LANGCHAIN_OPTIONS).to(groqOptions); // or anthropicOptions
 ```
 
 3. Inject and use the LangChain service in your controllers or services:
@@ -139,7 +151,11 @@ export class WeatherTool implements Tool {
 1. Set up environment variables:
    ```bash
    # Create a .env file in examples/basic-ai-agent
+   # For Groq
    echo "GROQ_API_KEY=your_api_key_here" > examples/basic-ai-agent/.env
+
+   # OR for Anthropic
+   echo "ANTHROPIC_API_KEY=your_api_key_here" > examples/basic-ai-agent/.env
    ```
 
 2. Start the example application:

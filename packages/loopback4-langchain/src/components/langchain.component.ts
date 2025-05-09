@@ -1,19 +1,22 @@
 import {Component, ProviderMap, inject} from '@loopback/core';
-import {LangChainOptions} from '../services/langchain.service';
-import {LANGCHAIN_OPTIONS} from '../keys';
+import {LangChainOptions, LangChainService} from '../services/langchain.service';
+import {LANGCHAIN_OPTIONS, LANGCHAIN_SERVICE, REDIS_CHAT_MESSAGE_HISTORY} from '../keys';
 import {LangChainServiceProvider} from '../providers/langchain.provider';
+import {RedisChatMessageHistoryProvider} from '../providers/redis-chat-history.provider';
 import {ToolExtensionPointImpl} from '../extension-points/langchain-tools.extension-point';
+import {OutputParserExtensionPointImpl} from '../extension-points/langchain-output-parsers.extension-point';
 
 export class LangChainComponent implements Component {
   providers?: ProviderMap;
-  services = [ToolExtensionPointImpl];
+  services = [LangChainService,ToolExtensionPointImpl, OutputParserExtensionPointImpl];
 
   constructor(
     @inject(LANGCHAIN_OPTIONS, {optional: true})
     private options: LangChainOptions = {},
   ) {
     this.providers = {
-      [LangChainServiceProvider.name]: LangChainServiceProvider,
+      [LANGCHAIN_SERVICE.key]: LangChainServiceProvider,
+      [REDIS_CHAT_MESSAGE_HISTORY.key]: RedisChatMessageHistoryProvider,
     };
   }
 }
