@@ -4,6 +4,9 @@
   "description": "Loopback 4 extension for LangChain integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "lb4lc": "./dist/cli/index.js"
+  },
   "scripts": {
     "build": "npm run clean && lb-tsc",
     "build:watch": "npm run clean && lb-tsc --watch",

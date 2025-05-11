@@ -28,11 +28,16 @@ export const LangChainBooterDefaults = {
     extensions: ['.js', '.ts'],
     nested: true,
   },
+  systems: {
+    dirs: ['systems'],
+    extensions: ['.js', '.ts'],
+    nested: true,
+  },
 };
 
 /**
  * A class that extends BaseArtifactBooter to boot LangChain artifacts.
- * Scans directories for prompts, tools, retrievers, and chains.
+ * Scans directories for prompts, tools, retrievers, chains, and systems.
  *
  * Supported phases: configure, discover, load
  */
@@ -43,6 +48,7 @@ export class LangChainBooter extends BaseArtifactBooter {
   private toolsDiscovered: string[] = [];
   private retrieversDiscovered: string[] = [];
   private chainsDiscovered: string[] = [];
+  private systemsDiscovered: string[] = [];
 
   // Define options as a property with the expected structure
   public options: {
@@ -104,6 +110,10 @@ export class LangChainBooter extends BaseArtifactBooter {
     // Discover chains
     const chainsGlob = this.buildGlob(this.artifactOptions.chains);
     this.chainsDiscovered = await this.discoverWithGlob(chainsGlob);
+
+    // Discover systems
+    const systemsGlob = this.buildGlob(this.artifactOptions.systems);
+    this.systemsDiscovered = await this.discoverWithGlob(systemsGlob);
   }
 
   /**
@@ -125,6 +135,10 @@ export class LangChainBooter extends BaseArtifactBooter {
     // Load and bind chains
     const chainClasses = await this.loadClassesFromFiles(this.chainsDiscovered);
     this.bindArtifacts('chains', chainClasses);
+
+    // Load and bind systems
+    const systemClasses = await this.loadClassesFromFiles(this.systemsDiscovered);
+    this.bindArtifacts('systems', systemClasses);
   }
 
   /**

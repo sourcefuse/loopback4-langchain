@@ -63,6 +63,47 @@ const config: LangChainConfig = {
 this.bind(LangChainBindings.CONFIG).to(config);
 ```
 
+## CLI Commands
+
+The package includes a CLI tool that can be used to generate boilerplate code for your LangChain-enabled Loopback application.
+
+### Installation
+
+The CLI is automatically installed when you install the package. You can run it using:
+
+```sh
+npx lb4lc <command> [options]
+```
+
+### Available Commands
+
+- `tool <name>`: Generate a new LangChain tool file in the `tools` directory.
+
+Example:
+
+```sh
+npx lb4lc tool calculator
+# Creates tools/calculator.tool.ts
+```
+
+- `prompt <name> [--system "..."]`: Generate a new prompt template file in the `prompts` directory.
+
+Example:
+
+```sh
+npx lb4lc prompt userQuery --system "You are a helpful assistant."
+# Creates prompts/userQuery.prompt.ts
+```
+
+- `system <name> --text="..."`: Generate a new system instruction file in the `systems` directory.
+
+Example:
+
+```sh
+npx lb4lc system assistant --text="You are a helpful assistant that provides concise answers."
+# Creates systems/assistant.system.ts
+```
+
 ## API Documentation
 
 ### Components
