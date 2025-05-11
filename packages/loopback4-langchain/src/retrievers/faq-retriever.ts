@@ -1,4 +1,4 @@
-import {Document} from '@langchain/core/documents';
+import {Document} from '@langchain/core/documents'
 
 /**
  * FaqRetriever class for retrieving answers from a FAQ knowledge base.
@@ -21,7 +21,7 @@ export class FaqRetriever {
    * @param answer - The FAQ answer
    */
   addFaq(question: string, answer: string): void {
-    this.faqs.push({question, answer});
+    this.faqs.push({question, answer})
   }
 
   /**
@@ -34,10 +34,10 @@ export class FaqRetriever {
    */
   async getRelevantDocuments(query: string): Promise<Document[]> {
     // Simple implementation: return FAQs where the question contains the query string
-    const normalizedQuery = query.toLowerCase();
+    const normalizedQuery = query.toLowerCase()
     const relevantFaqs = this.faqs.filter(faq =>
       faq.question.toLowerCase().includes(normalizedQuery),
-    );
+    )
 
     // Convert FAQs to Documents
     return relevantFaqs.map(
@@ -49,6 +49,6 @@ export class FaqRetriever {
             source: 'faq',
           },
         }),
-    );
+    )
   }
 }

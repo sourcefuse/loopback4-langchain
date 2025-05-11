@@ -1,7 +1,6 @@
-import {Provider, inject} from '@loopback/core';
-import {RedisChatMessageHistory} from '@langchain/redis';
-import {juggler} from '@loopback/repository';
-import {BindingScope, injectable} from '@loopback/core';
+import {Provider, inject, BindingScope, injectable} from '@loopback/core'
+import {RedisChatMessageHistory} from '@langchain/redis'
+import {juggler} from '@loopback/repository'
 
 /**
  * This class provides a RedisChatMessageHistory instance that uses
@@ -35,11 +34,11 @@ export class RedisChatMessageHistoryProvider
           '   - password: process.env.REDIS_PASSWORD (if required)\n' +
           '   - db: process.env.REDIS_DB || 0\n' +
           '3. Make sure to install the required dependencies: npm install loopback-connector-redis',
-      );
+      )
     }
 
     // Extract Redis connection details from the datasource
-    const config = this.redisDataSource.settings || {};
+    const config = this.redisDataSource.settings || {}
 
     // Create and return a RedisChatMessageHistory instance
     // The sessionId will be provided by the consumer when using this provider
@@ -49,6 +48,6 @@ export class RedisChatMessageHistoryProvider
       sessionId: 'default', // This will be overridden by the consumer
       // Only include the prefix if it's defined
       ...(config.prefix ? {prefix: config.prefix} : {}),
-    });
+    })
   }
 }

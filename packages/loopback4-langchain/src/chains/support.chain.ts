@@ -1,9 +1,9 @@
-import {inject} from '@loopback/core';
-import {BaseChain} from 'langchain/chains';
-import {BaseChatModel} from '@langchain/core/language_models/chat_models';
-import {ChainValues} from '@langchain/core/utils/types';
-import {StructuredOutputParser} from '@langchain/core/output_parsers';
-import {z} from 'zod';
+import {inject} from '@loopback/core'
+import {BaseChain} from 'langchain/chains'
+import {BaseChatModel} from '@langchain/core/language_models/chat_models'
+import {ChainValues} from '@langchain/core/utils/types'
+import {StructuredOutputParser} from '@langchain/core/output_parsers'
+import {z} from 'zod'
 
 // Define the schema for support responses
 const supportResponseSchema = z.object({
@@ -18,7 +18,7 @@ const supportResponseSchema = z.object({
   summary: z.string().describe("A brief summary of the customer's issue"),
   response: z.string().describe('A helpful response to the customer'),
   nextSteps: z.array(z.string()).describe('Suggested next steps or actions'),
-});
+})
 
 /**
  * A support chain that handles customer support requests.
@@ -27,7 +27,7 @@ const supportResponseSchema = z.object({
  * with categorization, priority, and suggested actions.
  */
 export class SupportChain extends BaseChain {
-  private outputParser: StructuredOutputParser<any>;
+  private outputParser: StructuredOutputParser<any>
 
   /**
    * Constructor with dependency injection
@@ -39,30 +39,30 @@ export class SupportChain extends BaseChain {
     @inject('langchain.chat_model')
     private chatModel: BaseChatModel,
     private options: {
-      template?: string;
-      verbose?: boolean;
+      template?: string
+      verbose?: boolean
     } = {},
   ) {
-    super(options);
+    super(options)
 
     // Create a structured output parser for support responses
     this.outputParser = StructuredOutputParser.fromZodSchema(
       supportResponseSchema,
-    );
+    )
   }
 
   /**
    * Get the input keys required by this chain
    */
   get inputKeys(): string[] {
-    return ['query'];
+    return ['query']
   }
 
   /**
    * Get the output keys produced by this chain
    */
   get outputKeys(): string[] {
-    return ['result'];
+    return ['result']
   }
 
   /**
@@ -72,34 +72,34 @@ export class SupportChain extends BaseChain {
    * @returns A promise that resolves to the output values
    */
   async _call(values: ChainValues): Promise<ChainValues> {
-    const query = values.query as string;
+    const query = values.query as string
     const template =
       this.options.template ||
       `You are a helpful customer support assistant. Analyze the following customer query and provide a structured response.
 
       Customer Query: {query}
 
-      ${this.outputParser.getFormatInstructions()}`;
+      ${this.outputParser.getFormatInstructions()}`
 
-    const formattedTemplate = template.replace('{query}', query);
+    const formattedTemplate = template.replace('{query}', query)
 
-    const response = await this.chatModel.invoke(formattedTemplate);
+    const response = await this.chatModel.invoke(formattedTemplate)
     // Convert MessageContent to string if needed
     const content =
       typeof response.content === 'string'
         ? response.content
-        : JSON.stringify(response.content);
-    const parsedResponse = await this.outputParser.parse(content);
+        : JSON.stringify(response.content)
+    const parsedResponse = await this.outputParser.parse(content)
 
     return {
       result: parsedResponse,
-    };
+    }
   }
 
   /**
    * Return a string representation of this chain
    */
   _chainType(): string {
-    return 'support_chain';
+    return 'support_chain'
   }
 }

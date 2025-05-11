@@ -41,6 +41,25 @@ To use the extension in your Loopback 4 application:
 npm install loopback4-langchain
 ```
 
+### CLI Tool
+
+The package includes a CLI tool that helps you generate boilerplate code for your LangChain-enabled Loopback application:
+
+```bash
+npx lb4lc <command> [options]
+```
+
+#### Available Commands
+
+- `tool <name>` - Generate a new LangChain tool
+- `prompt <name> [--system "..."]` - Generate a new prompt template
+- `system <name> --text="..."` - Generate a new system instruction
+- `retriever <name> [--datasource <DS>]` - Generate a new retriever
+- `runnable <name> [--type <type>]` - Generate a new runnable JSON stub
+- `chain <name> [--from <runnableName>]` - Generate a new chain
+
+For detailed CLI documentation, see the [package README](./packages/loopback4-langchain/README.md#cli-commands).
+
 ### Basic Usage
 
 1. Import the component in your application:

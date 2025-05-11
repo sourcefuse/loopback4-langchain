@@ -1,23 +1,23 @@
-import {describe, it, expect} from 'vitest';
-import Ajv from 'ajv';
-import * as fs from 'fs';
-import * as path from 'path';
+import {describe, it, expect} from 'vitest'
+import Ajv from 'ajv'
+import * as fs from 'fs'
+import * as path from 'path'
 
 describe('Runnable Schema', () => {
   const schemaPath = path.resolve(
     __dirname,
     '../../runtime/runnable-schema.json',
-  );
-  const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf-8'));
-  const ajv = new Ajv({allErrors: true, allowUnionTypes: true});
-  const validate = ajv.compile(schema);
+  )
+  const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf-8'))
+  const ajv = new Ajv({allErrors: true, allowUnionTypes: true})
+  const validate = ajv.compile(schema)
 
   it('should be a valid JSON schema', () => {
-    expect(schema.$schema).toBeDefined();
-    expect(schema.type).toBe('object');
-    expect(schema.properties).toBeDefined();
-    expect(schema.properties.type).toBeDefined();
-  });
+    expect(schema.$schema).toBeDefined()
+    expect(schema.type).toBe('object')
+    expect(schema.properties).toBeDefined()
+    expect(schema.properties.type).toBeDefined()
+  })
 
   it('should validate a valid LLM runnable', () => {
     const llmRunnable = {
@@ -34,12 +34,12 @@ describe('Runnable Schema', () => {
         type: 'langchain.llms.openai.OpenAI',
         id: ['langchain', 'llms', 'openai', 'OpenAI'],
       },
-    };
+    }
 
-    const valid = validate(llmRunnable);
-    expect(valid).toBe(true);
-    expect(validate.errors).toBeNull();
-  });
+    const valid = validate(llmRunnable)
+    expect(valid).toBe(true)
+    expect(validate.errors).toBeNull()
+  })
 
   it('should validate a valid chat model runnable', () => {
     const chatModelRunnable = {
@@ -56,12 +56,12 @@ describe('Runnable Schema', () => {
         type: 'langchain.chat_models.openai.ChatOpenAI',
         id: ['langchain', 'chat_models', 'openai', 'ChatOpenAI'],
       },
-    };
+    }
 
-    const valid = validate(chatModelRunnable);
-    expect(valid).toBe(true);
-    expect(validate.errors).toBeNull();
-  });
+    const valid = validate(chatModelRunnable)
+    expect(valid).toBe(true)
+    expect(validate.errors).toBeNull()
+  })
 
   it('should validate a valid tool runnable', () => {
     const toolRunnable = {
@@ -83,12 +83,12 @@ describe('Runnable Schema', () => {
         type: 'langchain.tools.base.Tool',
         id: ['langchain', 'tools', 'base', 'Tool'],
       },
-    };
+    }
 
-    const valid = validate(toolRunnable);
-    expect(valid).toBe(true);
-    expect(validate.errors).toBeNull();
-  });
+    const valid = validate(toolRunnable)
+    expect(valid).toBe(true)
+    expect(validate.errors).toBeNull()
+  })
 
   it('should validate a valid chain runnable', () => {
     const chainRunnable = {
@@ -112,12 +112,12 @@ describe('Runnable Schema', () => {
         type: 'langchain.chains.base.Chain',
         id: ['langchain', 'chains', 'base', 'Chain'],
       },
-    };
+    }
 
-    const valid = validate(chainRunnable);
-    expect(valid).toBe(true);
-    expect(validate.errors).toBeNull();
-  });
+    const valid = validate(chainRunnable)
+    expect(valid).toBe(true)
+    expect(validate.errors).toBeNull()
+  })
 
   it('should validate a valid retriever runnable', () => {
     const retrieverRunnable = {
@@ -135,27 +135,27 @@ describe('Runnable Schema', () => {
         type: 'langchain.retrievers.base.BaseRetriever',
         id: ['langchain', 'retrievers', 'base', 'BaseRetriever'],
       },
-    };
+    }
 
-    const valid = validate(retrieverRunnable);
-    expect(valid).toBe(true);
-    expect(validate.errors).toBeNull();
-  });
+    const valid = validate(retrieverRunnable)
+    expect(valid).toBe(true)
+    expect(validate.errors).toBeNull()
+  })
 
   it('should reject an invalid runnable missing required type', () => {
     const invalidRunnable = {
       id: 'test-invalid',
       name: 'Test Invalid',
       description: 'An invalid runnable missing type',
-    };
+    }
 
-    const valid = validate(invalidRunnable);
-    expect(valid).toBe(false);
-    expect(validate.errors).not.toBeNull();
+    const valid = validate(invalidRunnable)
+    expect(valid).toBe(false)
+    expect(validate.errors).not.toBeNull()
     expect(validate.errors?.[0].message).toContain(
       "must have required property 'type'",
-    );
-  });
+    )
+  })
 
   it('should reject an invalid runnable with unknown type', () => {
     const invalidRunnable = {
@@ -163,13 +163,13 @@ describe('Runnable Schema', () => {
       id: 'test-invalid',
       name: 'Test Invalid',
       description: 'An invalid runnable with unknown type',
-    };
+    }
 
-    const valid = validate(invalidRunnable);
-    expect(valid).toBe(false);
-    expect(validate.errors).not.toBeNull();
+    const valid = validate(invalidRunnable)
+    expect(valid).toBe(false)
+    expect(validate.errors).not.toBeNull()
     expect(validate.errors?.[0].message).toContain(
       'must be equal to one of the allowed values',
-    );
-  });
-});
+    )
+  })
+})

@@ -77,43 +77,112 @@ npx lb4lc <command> [options]
 
 ### Available Commands
 
-- `tool <name>`: Generate a new LangChain tool file in the `tools` directory.
+#### `tool <name>`
 
-Example:
+Generates a new LangChain tool file in the `tools` directory.
 
+**Arguments:**
+- `name`: Name of the tool (required)
+
+**Example:**
 ```sh
 npx lb4lc tool calculator
-# Creates tools/calculator.tool.ts
+# Creates tools/calculator.tool.ts with a Tool class implementation
 ```
 
-- `prompt <name> [--system "..."]`: Generate a new prompt template file in the `prompts` directory.
+#### `prompt <name> [--system "..."]`
 
-Example:
+Generates a new prompt template file in the `prompts` directory.
 
+**Arguments:**
+- `name`: Name of the prompt (required)
+
+**Options:**
+- `--system`: System prompt to include in the template (optional)
+
+**Example:**
 ```sh
 npx lb4lc prompt userQuery --system "You are a helpful assistant."
-# Creates prompts/userQuery.prompt.ts
+# Creates prompts/userQuery.prompt.ts with the specified system prompt
 ```
 
-- `system <name> --text="..."`: Generate a new system instruction file in the `systems` directory.
+#### `system <name> --text="..."`
 
-Example:
+Generates a new system instruction file in the `systems` directory.
 
+**Arguments:**
+- `name`: Name of the system instruction (required)
+
+**Options:**
+- `--text`: Text content for the system instruction (required)
+
+**Example:**
 ```sh
 npx lb4lc system assistant --text="You are a helpful assistant that provides concise answers."
-# Creates systems/assistant.system.ts
+# Creates systems/assistant.system.ts with the specified instruction
 ```
 
-- `runnable <name> [--type <type>]`: Generate a new runnable JSON stub in the `configs/runnables` directory. The type can be one of: llm, chat_model, tool, chain, retriever (defaults to chain).
+#### `retriever <name> [--datasource <DS>]`
 
-Example:
+Generates a new retriever file in the `retrievers` directory.
 
+**Arguments:**
+- `name`: Name of the retriever (required)
+
+**Options:**
+- `--datasource` or `-d`: Datasource to use for the retriever (optional)
+
+**Example:**
+```sh
+npx lb4lc retriever faqRetriever --datasource redisDS
+# Creates retrievers/faqRetriever.retriever.ts with Redis datasource configuration
+```
+
+#### `runnable <name> [--type <type>]`
+
+Generates a new runnable JSON stub in the `configs/runnables` directory.
+
+**Arguments:**
+- `name`: Name of the runnable (required)
+
+**Options:**
+- `--type`: Type of runnable to generate (optional, default: 'chain')
+  - Available types: 'llm', 'chat_model', 'tool', 'chain', 'retriever'
+
+**Example:**
 ```sh
 npx lb4lc runnable myChain
 # Creates configs/runnables/mychain.json with a chain runnable stub
 
 npx lb4lc runnable myLLM --type llm
 # Creates configs/runnables/myllm.json with an LLM runnable stub
+```
+
+#### `chain <name> [--from <runnableName>]`
+
+Generates a new chain class in the `chains` directory.
+
+**Arguments:**
+- `name`: Name of the chain (required)
+
+**Options:**
+- `--from`: Runnable name to use as source for the chain (optional)
+
+**Example:**
+```sh
+npx lb4lc chain supportChain
+# Creates chains/supportChain.chain.ts with a basic chain implementation
+
+npx lb4lc chain supportChain --from mySupportRunnable
+# Creates chains/supportChain.chain.ts based on the specified runnable
+```
+
+### CLI Help
+
+To see the available commands and options, run:
+
+```sh
+npx lb4lc
 ```
 
 ## API Documentation

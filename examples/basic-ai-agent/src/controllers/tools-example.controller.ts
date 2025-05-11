@@ -1,9 +1,9 @@
 import {inject} from '@loopback/core';
 import {get, param, post, requestBody} from '@loopback/rest';
 import {LangChainService} from 'loopback4-langchain';
-import {CalculatorTool} from '../tools';
 import {StructuredOutputParser} from '@langchain/core/output_parsers';
 import {z} from 'zod';
+import {CalculatorTool} from '../tools';
 
 /**
  * A controller that demonstrates how to use LangChain tools and output parsers

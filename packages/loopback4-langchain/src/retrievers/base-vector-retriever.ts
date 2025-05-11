@@ -1,6 +1,6 @@
-import {BaseRetriever} from '@langchain/core/retrievers';
-import {Document} from '@langchain/core/documents';
-import {DefaultCrudRepository, Entity} from '@loopback/repository';
+import {BaseRetriever} from '@langchain/core/retrievers'
+import {Document} from '@langchain/core/documents'
+import {DefaultCrudRepository, Entity} from '@loopback/repository'
 
 /**
  * Base VectorRetriever abstract class that wraps any LoopBack Repository with vectorSearch.
@@ -21,8 +21,10 @@ export abstract class BaseVectorRetriever<
    *
    * @param repository - The LoopBack repository to use for vector search
    */
-  constructor(protected repository: DefaultCrudRepository<T, ID, {}>) {
-    super();
+  constructor(
+    protected repository: DefaultCrudRepository<T, ID, Record<string, never>>,
+  ) {
+    super()
   }
 
   /**
@@ -33,7 +35,7 @@ export abstract class BaseVectorRetriever<
    * @param query - The query string to search for
    * @returns A promise that resolves to an array of Document objects
    */
-  abstract getRelevantDocuments(query: string): Promise<Document[]>;
+  abstract getRelevantDocuments(query: string): Promise<Document[]>
 
   /**
    * Convert a repository entity to a LangChain Document
@@ -41,7 +43,7 @@ export abstract class BaseVectorRetriever<
    * @param entity - The entity to convert
    * @returns A Document object
    */
-  protected abstract entityToDocument(entity: T): Document;
+  protected abstract entityToDocument(entity: T): Document
 
   /**
    * Perform a vector search on the repository
@@ -53,9 +55,9 @@ export abstract class BaseVectorRetriever<
   protected abstract vectorSearch(
     query: number[] | string,
     options?: {
-      k?: number;
-      filter?: object;
-      [key: string]: unknown;
+      k?: number
+      filter?: object
+      [key: string]: unknown
     },
-  ): Promise<T[]>;
+  ): Promise<T[]>
 }

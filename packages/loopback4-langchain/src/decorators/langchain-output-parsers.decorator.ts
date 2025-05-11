@@ -1,5 +1,5 @@
-import {ClassDecoratorFactory} from '@loopback/core';
-import {asOutputParser} from '../types/output-parser.types';
+import {ClassDecoratorFactory} from '@loopback/core'
+import {asOutputParser} from '../types/output-parser.types'
 
 /**
  * Decorator for marking a class as a LangChain output parser.
@@ -22,5 +22,5 @@ export function langchainOutputParsers() {
   return ClassDecoratorFactory.createDecorator<object>(
     'langchain.output_parsers',
     asOutputParser,
-  );
+  )
 }

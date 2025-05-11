@@ -1,5 +1,5 @@
-import {ClassDecoratorFactory} from '@loopback/core';
-import {asTool} from '../types/tools.types';
+import {ClassDecoratorFactory} from '@loopback/core'
+import {asTool} from '../types/tools.types'
 
 /**
  * Decorator for marking a class as a LangChain tool.
@@ -31,5 +31,5 @@ export function langchainTools() {
   return ClassDecoratorFactory.createDecorator<object>(
     'langchain.tools',
     asTool,
-  );
+  )
 }

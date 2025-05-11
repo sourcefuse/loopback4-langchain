@@ -1,8 +1,8 @@
-import {inject} from '@loopback/core';
-import {get, param, post, requestBody} from '@loopback/rest';
-import {LangChainService} from 'loopback4-langchain';
-import {RedisChatMessageHistory} from '@langchain/redis';
-import {HumanMessage, AIMessage} from '@langchain/core/messages';
+import {inject} from '@loopback/core'
+import {get, param, post, requestBody} from '@loopback/rest'
+import {LangChainService} from 'loopback4-langchain'
+import {RedisChatMessageHistory} from '@langchain/redis'
+import {HumanMessage, AIMessage} from '@langchain/core/messages'
 
 /**
  * A controller that provides chat functionality
@@ -41,8 +41,8 @@ export class ChatController {
       },
     })
     request: {
-      message: string;
-      sessionId: string;
+      message: string
+      sessionId: string
     },
   ): Promise<object> {
     // Create a new history instance with the provided sessionId
@@ -50,22 +50,22 @@ export class ChatController {
       sessionId: request.sessionId,
       // The Redis connection details are inherited from the provider
       client: this.redisChatHistory.client,
-    });
+    })
 
     // Add the user message to the history
-    await history.addMessage(new HumanMessage(request.message));
+    await history.addMessage(new HumanMessage(request.message))
 
     // Process the message using the LangChain service
-    const chatModel = this.langchainService.getChatModel();
-    const response = await chatModel.invoke(request.message);
+    const chatModel = this.langchainService.getChatModel()
+    const response = await chatModel.invoke(request.message)
 
     // Add the AI response to the history
-    await history.addMessage(new AIMessage(response));
+    await history.addMessage(new AIMessage(response))
 
     return {
       sessionId: request.sessionId,
       response,
-    };
+    }
   }
 
   /**
@@ -80,10 +80,10 @@ export class ChatController {
       sessionId,
       // The Redis connection details are inherited from the provider
       client: this.redisChatHistory.client,
-    });
+    })
 
     // Get all messages from the history
-    const messages = await history.getMessages();
+    const messages = await history.getMessages()
 
     return {
       sessionId,
@@ -91,7 +91,7 @@ export class ChatController {
         type: msg._getType(),
         content: msg.content,
       })),
-    };
+    }
   }
 
   /**
@@ -106,14 +106,14 @@ export class ChatController {
       sessionId,
       // The Redis connection details are inherited from the provider
       client: this.redisChatHistory.client,
-    });
+    })
 
     // Clear the history
-    await history.clear();
+    await history.clear()
 
     return {
       success: true,
       message: 'Chat history cleared',
-    };
+    }
   }
 }

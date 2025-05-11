@@ -1,56 +1,53 @@
-import {expect} from '@loopback/testlab';
-import {
-  LangChainService,
-  LangChainOptions,
-} from '../services/langchain.service';
-import * as sinon from 'sinon';
-import {ChatGroq} from '@langchain/groq';
-import {Tool} from 'langchain/tools';
-import {describe, it, beforeEach, afterEach} from 'vitest';
+import {expect} from '@loopback/testlab'
+import * as sinon from 'sinon'
+import {ChatGroq} from '@langchain/groq'
+import {Tool} from 'langchain/tools'
+import {describe, it, beforeEach, afterEach} from 'vitest'
+import {LangChainService, LangChainOptions} from '../services/langchain.service'
 
 describe('LangChainService', () => {
-  let service: LangChainService;
-  let chatGroqStub: sinon.SinonStub;
-  let mockInvoke: sinon.SinonStub;
+  let service: LangChainService
+  let chatGroqStub: sinon.SinonStub
+  let mockInvoke: sinon.SinonStub
 
   beforeEach(() => {
     // Create mock response
-    mockInvoke = sinon.stub();
-    mockInvoke.resolves({content: 'Default mock response'});
+    mockInvoke = sinon.stub()
+    mockInvoke.resolves({content: 'Default mock response'})
 
     // Create a stub for ChatGroq constructor
-    chatGroqStub = sinon.stub(ChatGroq.prototype, 'invoke');
-    chatGroqStub.callsFake(mockInvoke);
+    chatGroqStub = sinon.stub(ChatGroq.prototype, 'invoke')
+    chatGroqStub.callsFake(mockInvoke)
 
     // Create service with test options
     const options: LangChainOptions = {
       apiKey: 'test-api-key',
       model: 'test-model',
       temperature: 0.5,
-    };
-    const tools: Tool[] = [];
+    }
+    const tools: Tool[] = []
 
-    service = new LangChainService(options, tools);
-  });
+    service = new LangChainService(options, tools)
+  })
 
   afterEach(() => {
-    sinon.restore();
-  });
+    sinon.restore()
+  })
 
   it('should be initialized properly', () => {
-    expect(service.isInitialized()).to.be.true();
-    expect(service.getChatModel()).to.not.be.undefined();
-  });
+    expect(service.isInitialized()).to.be.true()
+    expect(service.getChatModel()).to.not.be.undefined()
+  })
 
   it('should call invoke with the correct prompt', async () => {
-    await service.generateText('Test prompt');
-    expect(chatGroqStub.calledOnce).to.be.true();
-    expect(chatGroqStub.calledWith('Test prompt')).to.be.true();
-  });
+    await service.generateText('Test prompt')
+    expect(chatGroqStub.calledOnce).to.be.true()
+    expect(chatGroqStub.calledWith('Test prompt')).to.be.true()
+  })
 
   it('should return the content from the response', async () => {
-    chatGroqStub.resolves({content: 'Custom response'});
-    const result = await service.generateText('Hello');
-    expect(result).to.equal('Custom response');
-  });
-});
+    chatGroqStub.resolves({content: 'Custom response'})
+    const result = await service.generateText('Hello')
+    expect(result).to.equal('Custom response')
+  })
+})

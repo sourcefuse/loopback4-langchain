@@ -13,7 +13,7 @@ const config = {
   // Optional configurations
   db: process.env.REDIS_DB || 0,
   // Additional settings for chat history
-  ttl: process.env.REDIS_TTL ? parseInt(process.env.REDIS_TTL) : undefined,
+  ttl: process.env.REDIS_TTL ? parseInt(process.env.REDIS_TTL, 10) : undefined,
   prefix: process.env.REDIS_PREFIX || 'langchain:chat_history:',
 };
 
@@ -27,6 +27,7 @@ export class RedisDataSource
   implements LifeCycleObserver
 {
   static dataSourceName = 'Redis';
+
   static readonly defaultConfig = config;
 
   constructor(dsConfig: object = config) {

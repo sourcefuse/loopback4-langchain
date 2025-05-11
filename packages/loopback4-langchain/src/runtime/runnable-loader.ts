@@ -1,11 +1,11 @@
-import {inject, Context, BindingScope, Provider} from '@loopback/core';
-import * as fs from 'fs';
-import * as path from 'path';
-import Ajv from 'ajv';
-import {Tool} from 'langchain/tools';
-import {BaseOutputParser} from '@langchain/core/output_parsers';
-import {BaseChatModel} from '@langchain/core/language_models/chat_models';
-import {BaseRetriever} from '@langchain/core/retrievers';
+import {inject, Context, BindingScope, Provider} from '@loopback/core'
+import * as fs from 'fs'
+import * as path from 'path'
+import Ajv from 'ajv'
+import {Tool} from 'langchain/tools'
+import {BaseOutputParser} from '@langchain/core/output_parsers'
+import {BaseChatModel} from '@langchain/core/language_models/chat_models'
+import {BaseRetriever} from '@langchain/core/retrievers'
 
 /**
  * Type definition for a Runnable object
@@ -19,18 +19,18 @@ export interface Runnable {
     | 'retriever'
     | 'output_parser'
     | 'prompt'
-    | 'document_transformer';
-  id: string;
-  name: string;
-  description?: string;
-  metadata?: Record<string, unknown>;
-  config?: Record<string, unknown>;
+    | 'document_transformer'
+  id: string
+  name: string
+  description?: string
+  metadata?: Record<string, unknown>
+  config?: Record<string, unknown>
   lc?: {
-    type: string;
-    id: string | string[];
-    kwargs?: Record<string, unknown>;
-  };
-  instance?: any;
+    type: string
+    id: string | string[]
+    kwargs?: Record<string, unknown>
+  }
+  instance?: any
 }
 
 /**
@@ -40,17 +40,17 @@ export interface RunnableLoaderOptions {
   /**
    * Path to the specification file
    */
-  specPath?: string;
+  specPath?: string
 
   /**
    * Specification object (alternative to specPath)
    */
-  spec?: Runnable;
+  spec?: Runnable
 
   /**
    * Context for dependency injection
    */
-  context?: Context;
+  context?: Context
 }
 
 /**
@@ -58,17 +58,19 @@ export interface RunnableLoaderOptions {
  * and returns a Runnable object.
  */
 export class RunnableLoader {
-  private ajv: Ajv;
-  private schema: Record<string, unknown>;
-  private context: Context;
+  private ajv: Ajv
+
+  private schema: Record<string, unknown>
+
+  private context: Context
 
   constructor(@inject.context() context: Context) {
-    this.context = context;
-    this.ajv = new Ajv({allErrors: true, allowUnionTypes: true});
+    this.context = context
+    this.ajv = new Ajv({allErrors: true, allowUnionTypes: true})
 
     // Load the schema
-    const schemaPath = path.resolve(__dirname, './runnable-schema.json');
-    this.schema = JSON.parse(fs.readFileSync(schemaPath, 'utf-8'));
+    const schemaPath = path.resolve(__dirname, './runnable-schema.json')
+    this.schema = JSON.parse(fs.readFileSync(schemaPath, 'utf-8'))
   }
 
   /**
@@ -77,37 +79,37 @@ export class RunnableLoader {
    * @returns The loaded Runnable object
    */
   async load(options: RunnableLoaderOptions): Promise<Runnable> {
-    let spec: Runnable;
+    let spec: Runnable
 
     // Load the specification
     if (options.spec) {
-      spec = options.spec;
+      spec = options.spec
     } else if (options.specPath) {
-      const specPath = path.resolve(options.specPath);
+      const specPath = path.resolve(options.specPath)
       if (!fs.existsSync(specPath)) {
-        throw new Error(`Specification file not found: ${specPath}`);
+        throw new Error(`Specification file not found: ${specPath}`)
       }
-      spec = JSON.parse(fs.readFileSync(specPath, 'utf-8'));
+      spec = JSON.parse(fs.readFileSync(specPath, 'utf-8'))
     } else {
-      throw new Error('Either spec or specPath must be provided');
+      throw new Error('Either spec or specPath must be provided')
     }
 
     // Validate the specification against the schema
-    const validate = this.ajv.compile(this.schema);
-    const valid = validate(spec);
+    const validate = this.ajv.compile(this.schema)
+    const valid = validate(spec)
     if (!valid) {
       throw new Error(
         `Invalid Runnable specification: ${JSON.stringify(validate.errors)}`,
-      );
+      )
     }
 
     // Resolve bindings based on the type of Runnable
     const resolvedRunnable = await this.resolveBindings(
       spec,
       options.context || this.context,
-    );
+    )
 
-    return resolvedRunnable;
+    return resolvedRunnable
   }
 
   /**
@@ -121,7 +123,7 @@ export class RunnableLoader {
     context: Context,
   ): Promise<Runnable> {
     // Create a copy of the spec to avoid modifying the original
-    const resolvedSpec = {...spec};
+    const resolvedSpec = {...spec}
 
     switch (spec.type) {
       case 'llm':
@@ -132,121 +134,121 @@ export class RunnableLoader {
             const chatModelBindings = await context.findByTag({
               name: 'langchain.chat_model',
               model: spec.config.model,
-            });
+            })
             if (chatModelBindings && chatModelBindings.length > 0) {
               const chatModel = await context.get<BaseChatModel>(
                 chatModelBindings[0].key,
-              );
-              resolvedSpec.instance = chatModel;
+              )
+              resolvedSpec.instance = chatModel
             }
           } catch (error) {
             // If no binding is found, continue with the spec as is
             console.warn(
               `No binding found for chat model: ${spec.config.model}`,
-            );
+            )
           }
         }
-        break;
+        break
 
       case 'tool':
         // Resolve tool bindings
         try {
-          const toolBindings = await context.findByTag({artifactType: 'tools'});
+          const toolBindings = await context.findByTag({artifactType: 'tools'})
           for (const binding of toolBindings) {
-            const tool = await context.get<Tool>(binding.key);
+            const tool = await context.get<Tool>(binding.key)
             if (tool.name === spec.name) {
-              resolvedSpec.instance = tool;
-              break;
+              resolvedSpec.instance = tool
+              break
             }
           }
         } catch (error) {
           // If no binding is found, continue with the spec as is
-          console.warn(`No binding found for tool: ${spec.name}`);
+          console.warn(`No binding found for tool: ${spec.name}`)
         }
-        break;
+        break
 
       case 'retriever':
         // Resolve retriever bindings
         try {
           const retrieverBindings = await context.findByTag({
             artifactType: 'retrievers',
-          });
+          })
           for (const binding of retrieverBindings) {
-            const retriever = await context.get<BaseRetriever>(binding.key);
+            const retriever = await context.get<BaseRetriever>(binding.key)
             if (retriever.constructor.name === spec.name) {
-              resolvedSpec.instance = retriever;
-              break;
+              resolvedSpec.instance = retriever
+              break
             }
           }
         } catch (error) {
           // If no binding is found, continue with the spec as is
-          console.warn(`No binding found for retriever: ${spec.name}`);
+          console.warn(`No binding found for retriever: ${spec.name}`)
         }
-        break;
+        break
 
       case 'output_parser':
         // Resolve output parser bindings
         try {
           const parserBindings = await context.findByTag({
             artifactType: 'output_parsers',
-          });
+          })
           for (const binding of parserBindings) {
-            const parser = await context.get<BaseOutputParser>(binding.key);
+            const parser = await context.get<BaseOutputParser>(binding.key)
             if (parser.name === spec.name) {
-              resolvedSpec.instance = parser;
-              break;
+              resolvedSpec.instance = parser
+              break
             }
           }
         } catch (error) {
           // If no binding is found, continue with the spec as is
-          console.warn(`No binding found for output parser: ${spec.name}`);
+          console.warn(`No binding found for output parser: ${spec.name}`)
         }
-        break;
+        break
 
       case 'chain':
         // Resolve chain bindings
         try {
           const chainBindings = await context.findByTag({
             artifactType: 'chains',
-          });
+          })
           for (const binding of chainBindings) {
-            const chain = await context.get(binding.key);
+            const chain = await context.get(binding.key)
             if ((chain as any).constructor.name === spec.name) {
-              resolvedSpec.instance = chain;
-              break;
+              resolvedSpec.instance = chain
+              break
             }
           }
         } catch (error) {
           // If no binding is found, continue with the spec as is
-          console.warn(`No binding found for chain: ${spec.name}`);
+          console.warn(`No binding found for chain: ${spec.name}`)
         }
-        break;
+        break
 
       case 'prompt':
         // Resolve prompt bindings
         try {
           const promptBindings = await context.findByTag({
             artifactType: 'prompts',
-          });
+          })
           for (const binding of promptBindings) {
-            const prompt = await context.get(binding.key);
+            const prompt = await context.get(binding.key)
             if ((prompt as any).constructor.name === spec.name) {
-              resolvedSpec.instance = prompt;
-              break;
+              resolvedSpec.instance = prompt
+              break
             }
           }
         } catch (error) {
           // If no binding is found, continue with the spec as is
-          console.warn(`No binding found for prompt: ${spec.name}`);
+          console.warn(`No binding found for prompt: ${spec.name}`)
         }
-        break;
+        break
 
       default:
         // For other types, return the spec as is
-        break;
+        break
     }
 
-    return resolvedSpec;
+    return resolvedSpec
   }
 }
 
@@ -257,6 +259,6 @@ export class RunnableLoaderProvider implements Provider<RunnableLoader> {
   constructor(@inject.context() private context: Context) {}
 
   value(): RunnableLoader {
-    return new RunnableLoader(this.context);
+    return new RunnableLoader(this.context)
   }
 }

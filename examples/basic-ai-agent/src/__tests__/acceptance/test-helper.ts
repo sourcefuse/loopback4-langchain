@@ -1,9 +1,9 @@
-import {BasicAiAgentApplication} from '../..';
 import {
   createRestAppClient,
   givenHttpServerConfig,
   Client,
 } from '@loopback/testlab';
+import {BasicAiAgentApplication} from '../..';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const restConfig = givenHttpServerConfig({

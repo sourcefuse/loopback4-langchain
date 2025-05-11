@@ -1,12 +1,11 @@
-import {extensionPoint, extensions} from '@loopback/core';
-import {tool} from '@langchain/core/tools';
-import {TOOL_EXTENSION_POINT_NAME} from '../types/tools.types';
-import {Tool} from '../types/tools.types';
-import {Tool as LCToolType} from 'langchain/tools';
+import {extensionPoint, extensions} from '@loopback/core'
+import {tool} from '@langchain/core/tools'
+import {Tool as LCToolType} from 'langchain/tools'
+import {TOOL_EXTENSION_POINT_NAME, Tool} from '../types/tools.types'
 
 export interface ToolExtensionPoint {
-  tools: Tool[];
-  getTools(): LCToolType[];
+  tools: Tool[]
+  getTools(): LCToolType[]
 }
 
 @extensionPoint(TOOL_EXTENSION_POINT_NAME)
@@ -23,6 +22,6 @@ export class ToolExtensionPointImpl implements ToolExtensionPoint {
         description,
         schema: schema as any,
       }),
-    );
+    )
   }
 }

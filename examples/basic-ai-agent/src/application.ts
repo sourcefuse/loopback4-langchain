@@ -1,5 +1,5 @@
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
+import {ApplicationConfig, BindingKey} from '@loopback/core';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
@@ -8,15 +8,16 @@ import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {LangChainComponent, LangChainOptions} from 'loopback4-langchain';
 import {MySequence} from './sequence';
-import {
-  LangChainComponent,
-  LANGCHAIN_OPTIONS,
-  LangChainOptions,
-} from 'loopback4-langchain';
 import {RedisDataSource} from './datasources/redis.datasource';
 
 export {ApplicationConfig};
+
+// Create a binding key for LangChain options
+const LANGCHAIN_OPTIONS = BindingKey.create<LangChainOptions>(
+  'services.langchain.options',
+);
 
 export class BasicAiAgentApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),

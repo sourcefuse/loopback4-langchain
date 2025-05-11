@@ -47,13 +47,21 @@ This project adheres to our [Code of Conduct](CODE_OF_CONDUCT.md). By participat
 
 ## Development Workflow
 
-1. Create a new branch for your feature or bugfix:
+1. Create a new branch for your feature or bugfix following the branch naming convention:
 
    ```bash
    git checkout -b feature/your-feature-name
    # or
    git checkout -b fix/issue-you-are-fixing
    ```
+
+   **Branch Naming Convention:**
+   - `feature/` - for new features
+   - `fix/` - for bug fixes
+   - `docs/` - for documentation changes
+   - `refactor/` - for code refactoring
+   - `test/` - for adding or updating tests
+   - `chore/` - for maintenance tasks
 
 2. Make your changes and ensure they follow the project's coding standards
 
@@ -82,6 +90,17 @@ This project adheres to our [Code of Conduct](CODE_OF_CONDUCT.md). By participat
 5. Address any review feedback
 6. Once approved, your PR will be merged by a maintainer
 
+### PR Checklist
+
+Before submitting your pull request, please ensure the following:
+
+- [ ] `npm run build` (root) passes without errors
+- [ ] `npm test` (root) is green
+- [ ] `npm run lint` shows 0 warnings
+- [ ] Updated or created relevant docs / README sections
+- [ ] Added a Changeset if any public package API changed
+- [ ] CI workflow passes on the PR branch
+
 ## Coding Standards
 
 This project uses ESLint and Prettier to enforce coding standards:
@@ -97,10 +116,25 @@ This project uses ESLint and Prettier to enforce coding standards:
   npm run lint:fix
   ```
 
+- Check formatting with Prettier:
+  ```bash
+  npx prettier . --check
+  ```
+
+- Fix formatting issues:
+  ```bash
+  npx prettier . --write
+  ```
+
+_Note: A pre-commit hook (Husky + lint-staged) will run Prettier and ESLint (--fix) automatically._
+
 ### TypeScript Guidelines
 
-- Use TypeScript's static typing features
-- Document public APIs with JSDoc comments
+- Use TypeScript's strict mode with `noImplicitAny` and `exactOptionalPropertyTypes`
+- Use **interfaces** for contracts; **types** for unions/utility
+- Document public APIs with JSDoc comments (every exported symbol requires a JSDoc comment)
+- Use absolute imports via `@/<package>` path mapping; avoid relative paths like `../../../`
+- Avoid default exports except when exporting a LoopBack component/CLI command
 - Follow the [LoopBack 4 style guide](https://loopback.io/doc/en/lb4/code-style-guide.html)
 
 ## Testing Guidelines

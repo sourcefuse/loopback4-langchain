@@ -1,31 +1,31 @@
-import {describe, it, expect, beforeEach, vi} from 'vitest';
-import {Context} from '@loopback/core';
-import * as fs from 'fs';
-import * as path from 'path';
-import {RunnableLoader, Runnable} from '../../runtime/runnable-loader';
-import {Tool} from 'langchain/tools';
-import {BaseOutputParser} from '@langchain/core/output_parsers';
-import {BaseChatModel} from '@langchain/core/language_models/chat_models';
-import {BaseRetriever} from '@langchain/core/retrievers';
+import {describe, it, expect, beforeEach, vi} from 'vitest'
+import {Context} from '@loopback/core'
+import * as fs from 'fs'
+import * as path from 'path'
+import {Tool} from 'langchain/tools'
+import {BaseOutputParser} from '@langchain/core/output_parsers'
+import {BaseChatModel} from '@langchain/core/language_models/chat_models'
+import {BaseRetriever} from '@langchain/core/retrievers'
+import {RunnableLoader, Runnable} from '../../runtime/runnable-loader'
 
 // Mock fs and path modules
 vi.mock('fs', () => ({
   existsSync: vi.fn(),
   readFileSync: vi.fn(),
-}));
+}))
 
 vi.mock('path', () => ({
   resolve: vi.fn(p => p),
-}));
+}))
 
 describe('RunnableLoader', () => {
-  let context: Context;
-  let loader: RunnableLoader;
-  let mockSchema: Record<string, unknown>;
+  let context: Context
+  let loader: RunnableLoader
+  let mockSchema: Record<string, unknown>
 
   beforeEach(() => {
     // Reset mocks
-    vi.resetAllMocks();
+    vi.resetAllMocks()
 
     // Create a mock schema
     mockSchema = {
@@ -50,34 +50,34 @@ describe('RunnableLoader', () => {
         name: {type: 'string'},
       },
       required: ['type'],
-    };
+    }
 
     // Mock fs.readFileSync to return the schema
-    (fs.readFileSync as any).mockImplementation((filePath: string) => {
+    ;(fs.readFileSync as any).mockImplementation((filePath: string) => {
       if (filePath.includes('runnable-schema.json')) {
-        return JSON.stringify(mockSchema);
+        return JSON.stringify(mockSchema)
       }
-      return '{}';
-    });
+      return '{}'
+    })
 
     // Mock fs.existsSync to return true
-    (fs.existsSync as any).mockReturnValue(true);
+    ;(fs.existsSync as any).mockReturnValue(true)
 
     // Mock path.resolve to return the path as is
-    (path.resolve as any).mockImplementation((dir: string, file: string) => {
-      return file;
-    });
+    ;(path.resolve as any).mockImplementation(
+      (dir: string, file: string) => file,
+    )
 
     // Create a context
-    context = new Context();
+    context = new Context()
 
     // Create the loader
-    loader = new RunnableLoader(context);
-  });
+    loader = new RunnableLoader(context)
+  })
 
   it('should be defined', () => {
-    expect(loader).toBeDefined();
-  });
+    expect(loader).toBeDefined()
+  })
 
   it('should load a Runnable from a spec object', async () => {
     const spec: Runnable = {
@@ -87,49 +87,49 @@ describe('RunnableLoader', () => {
       config: {
         model: 'gpt-3.5-turbo',
       },
-    };
+    }
 
-    const result = await loader.load({spec});
+    const result = await loader.load({spec})
 
-    expect(result).toBeDefined();
-    expect(result.type).toBe('llm');
-    expect(result.id).toBe('test-llm');
-    expect(result.name).toBe('Test LLM');
-  });
+    expect(result).toBeDefined()
+    expect(result.type).toBe('llm')
+    expect(result.id).toBe('test-llm')
+    expect(result.name).toBe('Test LLM')
+  })
 
   it('should load a Runnable from a spec file', async () => {
     // Skip this test for now as it requires more complex mocking
     // The test is verifying that a Runnable can be loaded from a file,
     // which is already covered by other tests in the booter.spec.ts file
-    expect(true).toBe(true);
-  });
+    expect(true).toBe(true)
+  })
 
   it('should throw an error if the spec file is not found', async () => {
     // Mock fs.existsSync to return false
-    (fs.existsSync as any).mockReturnValue(false);
+    ;(fs.existsSync as any).mockReturnValue(false)
 
     await expect(loader.load({specPath: 'non-existent.json'})).rejects.toThrow(
       'Specification file not found',
-    );
-  });
+    )
+  })
 
   it('should throw an error if neither spec nor specPath is provided', async () => {
     await expect(loader.load({})).rejects.toThrow(
       'Either spec or specPath must be provided',
-    );
-  });
+    )
+  })
 
   it('should throw an error if the spec is invalid', async () => {
     const invalidSpec = {
       // Missing required 'type' field
       id: 'test-invalid',
       name: 'Test Invalid',
-    };
+    }
 
     await expect(loader.load({spec: invalidSpec as any})).rejects.toThrow(
       'Invalid Runnable specification',
-    );
-  });
+    )
+  })
 
   it('should resolve bindings for a chat model', async () => {
     const spec: Runnable = {
@@ -139,32 +139,32 @@ describe('RunnableLoader', () => {
       config: {
         model: 'gpt-4',
       },
-    };
+    }
 
     // Create a mock chat model
     const mockChatModel = {
       name: 'Test Chat Model',
       invoke: vi.fn(),
-    };
+    }
 
     // Mock context.findByTag to return a binding
     const mockBinding = {
       key: 'test-binding',
-    };
-    context.findByTag = vi.fn().mockResolvedValue([mockBinding]);
+    }
+    context.findByTag = vi.fn().mockResolvedValue([mockBinding])
 
     // Mock context.get to return the chat model
-    context.get = vi.fn().mockResolvedValue(mockChatModel);
+    context.get = vi.fn().mockResolvedValue(mockChatModel)
 
-    const result = await loader.load({spec});
+    const result = await loader.load({spec})
 
-    expect(result).toBeDefined();
-    expect(result.type).toBe('chat_model');
-    expect(result.id).toBe('test-chat-model');
-    expect(result.name).toBe('Test Chat Model');
+    expect(result).toBeDefined()
+    expect(result.type).toBe('chat_model')
+    expect(result.id).toBe('test-chat-model')
+    expect(result.name).toBe('Test Chat Model')
     // The instance property should be set with the resolved binding
-    expect(result.instance).toBeDefined();
-  });
+    expect(result.instance).toBeDefined()
+  })
 
   it('should resolve bindings for a tool', async () => {
     const spec: Runnable = {
@@ -179,32 +179,32 @@ describe('RunnableLoader', () => {
           },
         },
       },
-    };
+    }
 
     // Create a mock tool
     const mockTool = {
       name: 'Test Tool',
       call: vi.fn(),
-    };
+    }
 
     // Mock context.findByTag to return a binding
     const mockBinding = {
       key: 'test-binding',
-    };
-    context.findByTag = vi.fn().mockResolvedValue([mockBinding]);
+    }
+    context.findByTag = vi.fn().mockResolvedValue([mockBinding])
 
     // Mock context.get to return the tool
-    context.get = vi.fn().mockResolvedValue(mockTool);
+    context.get = vi.fn().mockResolvedValue(mockTool)
 
-    const result = await loader.load({spec});
+    const result = await loader.load({spec})
 
-    expect(result).toBeDefined();
-    expect(result.type).toBe('tool');
-    expect(result.id).toBe('test-tool');
-    expect(result.name).toBe('Test Tool');
+    expect(result).toBeDefined()
+    expect(result.type).toBe('tool')
+    expect(result.id).toBe('test-tool')
+    expect(result.name).toBe('Test Tool')
     // The instance property should be set with the resolved binding
-    expect(result.instance).toBeDefined();
-  });
+    expect(result.instance).toBeDefined()
+  })
 
   it('should handle errors when resolving bindings', async () => {
     const spec: Runnable = {
@@ -214,31 +214,31 @@ describe('RunnableLoader', () => {
       config: {
         search_type: 'similarity',
       },
-    };
+    }
 
     // Mock context.findByTag to throw an error
-    context.findByTag = vi.fn().mockRejectedValue(new Error('Test error'));
+    context.findByTag = vi.fn().mockRejectedValue(new Error('Test error'))
 
     // Mock console.warn to avoid cluttering test output
     const consoleWarnSpy = vi
       .spyOn(console, 'warn')
-      .mockImplementation(() => {});
+      .mockImplementation(() => {})
 
-    const result = await loader.load({spec});
+    const result = await loader.load({spec})
 
-    expect(result).toBeDefined();
-    expect(result.type).toBe('retriever');
-    expect(result.id).toBe('test-retriever');
-    expect(result.name).toBe('Test Retriever');
+    expect(result).toBeDefined()
+    expect(result.type).toBe('retriever')
+    expect(result.id).toBe('test-retriever')
+    expect(result.name).toBe('Test Retriever')
     // The instance property should not be set
-    expect(result.instance).toBeUndefined();
+    expect(result.instance).toBeUndefined()
 
     // Verify that console.warn was called
-    expect(consoleWarnSpy).toHaveBeenCalled();
+    expect(consoleWarnSpy).toHaveBeenCalled()
 
     // Restore console.warn
-    consoleWarnSpy.mockRestore();
-  });
+    consoleWarnSpy.mockRestore()
+  })
 
   it('should build a sequence of Runnables', async () => {
     // Create a chain spec with steps
@@ -260,57 +260,57 @@ describe('RunnableLoader', () => {
           },
         ],
       },
-    };
+    }
 
     // Create mock steps
     const mockStep1 = {
       name: 'Step 1',
       invoke: vi.fn(),
-    };
+    }
 
     const mockStep2 = {
       name: 'Step 2',
       call: vi.fn(),
-    };
+    }
 
     // Mock context.findByTag to return bindings
     const mockBinding1 = {
       key: 'step1-binding',
-    };
+    }
 
     const mockBinding2 = {
       key: 'step2-binding',
-    };
+    }
 
     context.findByTag = vi.fn().mockImplementation(tag => {
       if (tag.artifactType === 'chains') {
-        return Promise.resolve([mockBinding1]);
+        return Promise.resolve([mockBinding1])
       }
-      return Promise.resolve([]);
-    });
+      return Promise.resolve([])
+    })
 
     // Mock context.get to return the steps
     context.get = vi.fn().mockImplementation(key => {
       if (key === 'step1-binding') {
-        return Promise.resolve(mockStep1);
+        return Promise.resolve(mockStep1)
       }
       if (key === 'step2-binding') {
-        return Promise.resolve(mockStep2);
+        return Promise.resolve(mockStep2)
       }
-      return Promise.resolve(null);
-    });
+      return Promise.resolve(null)
+    })
 
-    const result = await loader.load({spec: chainSpec});
+    const result = await loader.load({spec: chainSpec})
 
-    expect(result).toBeDefined();
-    expect(result.type).toBe('chain');
-    expect(result.id).toBe('test-chain');
-    expect(result.name).toBe('Test Chain');
+    expect(result).toBeDefined()
+    expect(result.type).toBe('chain')
+    expect(result.id).toBe('test-chain')
+    expect(result.name).toBe('Test Chain')
     // Since we're not actually setting up a chain instance in the mock,
     // we'll just check that the result has the expected properties
-    expect(result.config).toBeDefined();
-    expect(result.config?.steps).toHaveLength(2);
-  });
+    expect(result.config).toBeDefined()
+    expect(result.config?.steps).toHaveLength(2)
+  })
 
   it('should map Runnables to their implementations', async () => {
     // Create multiple specs
@@ -341,65 +341,65 @@ describe('RunnableLoader', () => {
           search_type: 'similarity',
         },
       },
-    ];
+    ]
 
     // Create mock implementations
     const mockLLM = {
       name: 'LLM 1',
       invoke: vi.fn(),
-    };
+    }
 
     const mockTool = {
       name: 'Tool 1',
       call: vi.fn(),
-    };
+    }
 
     const mockRetriever = {
       constructor: {
         name: 'Retriever 1',
       },
       getRelevantDocuments: vi.fn(),
-    };
+    }
 
     // Mock context.findByTag to return bindings
     context.findByTag = vi.fn().mockImplementation(tag => {
       if (tag.name === 'langchain.chat_model') {
-        return Promise.resolve([{key: 'llm-binding'}]);
+        return Promise.resolve([{key: 'llm-binding'}])
       }
       if (tag.artifactType === 'tools') {
-        return Promise.resolve([{key: 'tool-binding'}]);
+        return Promise.resolve([{key: 'tool-binding'}])
       }
       if (tag.artifactType === 'retrievers') {
-        return Promise.resolve([{key: 'retriever-binding'}]);
+        return Promise.resolve([{key: 'retriever-binding'}])
       }
-      return Promise.resolve([]);
-    });
+      return Promise.resolve([])
+    })
 
     // Mock context.get to return the implementations
     context.get = vi.fn().mockImplementation(key => {
       if (key === 'llm-binding') {
-        return Promise.resolve(mockLLM);
+        return Promise.resolve(mockLLM)
       }
       if (key === 'tool-binding') {
-        return Promise.resolve(mockTool);
+        return Promise.resolve(mockTool)
       }
       if (key === 'retriever-binding') {
-        return Promise.resolve(mockRetriever);
+        return Promise.resolve(mockRetriever)
       }
-      return Promise.resolve(null);
-    });
+      return Promise.resolve(null)
+    })
 
     // Load each spec and build a map
-    const runnableMap = new Map<string, any>();
+    const runnableMap = new Map<string, any>()
 
     for (const spec of specs) {
-      const result = await loader.load({spec});
-      runnableMap.set(result.id, result.instance);
+      const result = await loader.load({spec})
+      runnableMap.set(result.id, result.instance)
     }
 
-    expect(runnableMap.size).toBe(3);
-    expect(runnableMap.get('llm1')).toBeDefined();
-    expect(runnableMap.get('tool1')).toBeDefined();
-    expect(runnableMap.get('retriever1')).toBeDefined();
-  });
-});
+    expect(runnableMap.size).toBe(3)
+    expect(runnableMap.get('llm1')).toBeDefined()
+    expect(runnableMap.get('tool1')).toBeDefined()
+    expect(runnableMap.get('retriever1')).toBeDefined()
+  })
+})

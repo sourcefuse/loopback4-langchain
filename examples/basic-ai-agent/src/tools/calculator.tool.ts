@@ -7,8 +7,10 @@ import {z} from 'zod';
 @langchainTools()
 export class CalculatorTool implements Tool {
   name = 'calculator';
+
   description =
     'A calculator that can perform basic arithmetic operations (add, subtract, multiply, divide)';
+
   schema = z
     .object({
       input: z.string().optional(),
@@ -34,7 +36,7 @@ export class CalculatorTool implements Tool {
       const a = parseFloat(aMatch[1]);
       const b = parseFloat(bMatch[1]);
 
-      if (isNaN(a) || isNaN(b)) {
+      if (Number.isNaN(a) || Number.isNaN(b)) {
         return 'Invalid numbers provided';
       }
 
