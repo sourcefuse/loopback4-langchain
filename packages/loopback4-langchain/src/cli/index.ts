@@ -27,6 +27,10 @@ class LB4LCCommand extends Command {
       options: ['llm', 'chat_model', 'tool', 'chain', 'retriever'],
       default: 'chain',
     }),
+    from: Flags.string({
+      description: 'Runnable name to use as source for chain command',
+      required: false,
+    }),
   };
 
   static args = {
@@ -53,6 +57,8 @@ class LB4LCCommand extends Command {
       await this.generateRetriever(args.name, flags.datasource);
     } else if (args.command === 'runnable' && args.name) {
       await this.generateRunnable(args.name, flags.type);
+    } else if (args.command === 'chain' && args.name) {
+      await this.generateChain(args.name, flags.from);
     } else {
       this.log('Welcome to LoopBack 4 LangChain CLI!');
       this.log('Available commands:');
@@ -66,6 +72,9 @@ class LB4LCCommand extends Command {
       );
       this.log(
         '  runnable <name> [--type <type>] - Generate a new runnable JSON stub',
+      );
+      this.log(
+        '  chain <name> [--from <runnableName>] - Generate a new chain',
       );
     }
   }
@@ -371,6 +380,174 @@ export class ${className} {
     }
 
     return JSON.stringify(template, null, 2);
+  }
+
+  private async generateChain(name: string, runnableName?: string): Promise<void> {
+    // Ensure the chains directory exists
+    const chainsDir = path.join(process.cwd(), 'chains');
+    if (!fs.existsSync(chainsDir)) {
+      fs.mkdirSync(chainsDir, {recursive: true});
+    }
+
+    const fileName = `${name}.chain.ts`;
+    const filePath = path.join(chainsDir, fileName);
+
+    // Check if file already exists
+    if (fs.existsSync(filePath)) {
+      this.error(`Chain file ${fileName} already exists in ${chainsDir}`);
+      return;
+    }
+
+    // Create the chain file content
+    const content = this.getChainTemplate(name, runnableName);
+
+    // Write the file
+    fs.writeFileSync(filePath, content);
+    this.log(`Created chain file: ${filePath}`);
+  }
+
+  private getChainTemplate(name: string, runnableName?: string): string {
+    const className = name.charAt(0).toUpperCase() + name.slice(1) + 'Chain';
+
+    if (runnableName) {
+      return `import {inject} from '@loopback/core';
+import {BaseChain} from 'langchain/chains';
+import {ChainValues} from '@langchain/core/utils/types';
+import {RunnableLoader} from 'loopback4-langchain';
+
+/**
+ * ${className} - A chain that uses the ${runnableName} runnable
+ */
+export class ${className} extends BaseChain {
+  /**
+   * Constructor with dependency injection
+   * 
+   * @param runnableLoader - The runnable loader to use for loading the ${runnableName} runnable
+   * @param options - Optional configuration options for the chain
+   */
+  constructor(
+    @inject('services.RunnableLoader')
+    private runnableLoader: RunnableLoader,
+    private options: {
+      verbose?: boolean;
+    } = {},
+  ) {
+    super(options);
+  }
+
+  /**
+   * Get the input keys required by this chain
+   */
+  get inputKeys(): string[] {
+    return ['input'];
+  }
+
+  /**
+   * Get the output keys produced by this chain
+   */
+  get outputKeys(): string[] {
+    return ['output'];
+  }
+
+  /**
+   * Run the chain with the provided input
+   * 
+   * @param values - The input values for the chain
+   * @returns A promise that resolves to the output values
+   */
+  async _call(values: ChainValues): Promise<ChainValues> {
+    const input = values.input as string;
+
+    // Load the runnable
+    const runnable = await this.runnableLoader.load({
+      id: '${runnableName}',
+    });
+
+    // Invoke the runnable
+    const result = await runnable.invoke(input);
+
+    return {
+      output: result,
+    };
+  }
+
+  /**
+   * Return a string representation of this chain
+   */
+  _chainType(): string {
+    return '${name.toLowerCase()}_chain';
+  }
+}
+`;
+    } else {
+      return `import {inject} from '@loopback/core';
+import {BaseChain} from 'langchain/chains';
+import {BaseChatModel} from '@langchain/core/language_models/chat_models';
+import {ChainValues} from '@langchain/core/utils/types';
+
+/**
+ * ${className} - A custom chain for ${name}
+ */
+export class ${className} extends BaseChain {
+  /**
+   * Constructor with dependency injection
+   * 
+   * @param chatModel - The chat model to use for generating responses
+   * @param options - Optional configuration options for the chain
+   */
+  constructor(
+    @inject('langchain.chat_model')
+    private chatModel: BaseChatModel,
+    private options: {
+      template?: string;
+      verbose?: boolean;
+    } = {},
+  ) {
+    super(options);
+  }
+
+  /**
+   * Get the input keys required by this chain
+   */
+  get inputKeys(): string[] {
+    return ['input'];
+  }
+
+  /**
+   * Get the output keys produced by this chain
+   */
+  get outputKeys(): string[] {
+    return ['output'];
+  }
+
+  /**
+   * Run the chain with the provided input
+   * 
+   * @param values - The input values for the chain
+   * @returns A promise that resolves to the output values
+   */
+  async _call(values: ChainValues): Promise<ChainValues> {
+    const input = values.input as string;
+    const template = this.options.template || 'Input: {input}\\nOutput:';
+
+    const formattedTemplate = template.replace('{input}', input);
+
+    const response = await this.chatModel.invoke(formattedTemplate);
+
+    return {
+      output: response.content,
+    };
+  }
+
+  /**
+   * Return a string representation of this chain
+   */
+  _chainType(): string {
+    return '${name.toLowerCase()}_chain';
+  }
+}
+`;
+    }
   }
 
   private getRetrieverTemplate(name: string, datasource?: string): string {
