@@ -1,4 +1,3 @@
-
 # Project Guidelines
 
 Welcome to the **LangChain × LoopBack 4 Monorepo**.  
@@ -31,8 +30,8 @@ langchain-loopback-monorepo/
         └── package.json
 ```
 
-*All new reusable code lives under **`packages/`**.  
-All runnable demos or tutorials live under **`examples/`**.*
+_All new reusable code lives under **`packages/`**.  
+All runnable demos or tutorials live under **`examples/`**._
 
 ---
 
@@ -49,11 +48,11 @@ npm install
 
 ## 3  Build Commands
 
-| Scope | Command | What it does |
-|-------|---------|--------------|
-| **All workspaces** | `npm run build --workspaces` | Compiles every TS project with `tsc -b` |
-| **Single workspace** | `npm run build -w=@yourorg/loopback4-langchain` | Builds just that package |
-| **Example app (watch)** | `npm run dev -w=support-bot` | Nodemon + TS‑node for hot reload |
+| Scope                   | Command                                         | What it does                            |
+| ----------------------- | ----------------------------------------------- | --------------------------------------- |
+| **All workspaces**      | `npm run build --workspaces`                    | Compiles every TS project with `tsc -b` |
+| **Single workspace**    | `npm run build -w=@yourorg/loopback4-langchain` | Builds just that package                |
+| **Example app (watch)** | `npm run dev -w=support-bot`                    | Nodemon + TS‑node for hot reload        |
 
 The root `package.json` provides shortcuts:
 
@@ -80,34 +79,34 @@ npm test -w=@yourorg/loopback4-langchain
 
 ### Special test helpers
 
-* **LoopBack Boot Tests** – import `BootTestApp` from `@loopback/boot` to verify auto‑binding.
-* **Fake LLMs** – use `langchain/testing`’s `FakeLLM` when you need deterministic chain tests.
+- **LoopBack Boot Tests** – import `BootTestApp` from `@loopback/boot` to verify auto‑binding.
+- **Fake LLMs** – use `langchain/testing`’s `FakeLLM` when you need deterministic chain tests.
 
 ---
 
 ## 5  Linting & Formatting
 
-| Tool | Invocation | Autocorrect |
-|------|------------|-------------|
-| ESLint | `npm run lint --workspaces` | `npm run lint --workspaces -- --fix` |
-| Prettier | `npx prettier . --check` | `npx prettier . --write` |
+| Tool     | Invocation                  | Autocorrect                          |
+| -------- | --------------------------- | ------------------------------------ |
+| ESLint   | `npm run lint --workspaces` | `npm run lint --workspaces -- --fix` |
+| Prettier | `npx prettier . --check`    | `npx prettier . --write`             |
 
-*Rules*: Airbnb base, TypeScript strict, no semicolons (unless required).  
-*A pre‑commit hook (Husky + lint‑staged) will run **Prettier** and **ESLint (--fix)** automatically.*
+_Rules_: Airbnb base, TypeScript strict, no semicolons (unless required).  
+_A pre‑commit hook (Husky + lint‑staged) will run **Prettier** and **ESLint (--fix)** automatically._
 
 ---
 
 ## 6  Versioning & Releases
 
-* **Independent versions** per package (managed by **Changesets**).
-* To release `@yourorg/loopback4-langchain`:
+- **Independent versions** per package (managed by **Changesets**).
+- To release `@yourorg/loopback4-langchain`:
 
 ```bash
 npm version patch -w=@yourorg/loopback4-langchain
 npm publish --workspace=@yourorg/loopback4-langchain
 ```
 
-*A GitHub Action publishes to npm when a PR containing a changeset is merged into `main`.*
+_A GitHub Action publishes to npm when a PR containing a changeset is merged into `main`._
 
 ---
 
@@ -127,13 +126,13 @@ Merge only if the workflow passes ✔︎.
 
 ## 8  Code Style Essentials
 
-* **TypeScript**:
-    * `strict: true`, `noImplicitAny`, `exactOptionalPropertyTypes`
-    * Use **interfaces** for contracts; **types** for unions/utility.
-* **Imports**: absolute via `@/<package>` path mapping; no `../../../`.
-* **Commit messages**: Conventional Commits (`feat:`, `fix:`, `chore:`).
-* **Documentation**: Every exported symbol requires a JSDoc comment.
-* **Avoid default exports** except when exporting a LoopBack component/CLI command.
+- **TypeScript**:
+  - `strict: true`, `noImplicitAny`, `exactOptionalPropertyTypes`
+  - Use **interfaces** for contracts; **types** for unions/utility.
+- **Imports**: absolute via `@/<package>` path mapping; no `../../../`.
+- **Commit messages**: Conventional Commits (`feat:`, `fix:`, `chore:`).
+- **Documentation**: Every exported symbol requires a JSDoc comment.
+- **Avoid default exports** except when exporting a LoopBack component/CLI command.
 
 ---
 
@@ -182,9 +181,9 @@ If you add a new file under `prompts/`, `tools/`, etc., simply restart the demo 
 
 ## 11  Open Questions
 
-* **Publishing strategy** – are releases automated or manual?
-* **License** – MIT is recommended; update if needed.
-* **Node version support** – Node LTS 20 is default; back‑port only if required.
+- **Publishing strategy** – are releases automated or manual?
+- **License** – MIT is recommended; update if needed.
+- **Node version support** – Node LTS 20 is default; back‑port only if required.
 
 ---
 

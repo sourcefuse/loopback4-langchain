@@ -1,8 +1,13 @@
 import {expect} from '@loopback/testlab';
-import {ChatModelProvider, ChatModelOptions, ChatModelType} from '../providers/chat-model.provider';
+import {
+  ChatModelProvider,
+  ChatModelOptions,
+  ChatModelType,
+} from '../providers/chat-model.provider';
 import * as sinon from 'sinon';
 import {ChatOpenAI} from '@langchain/openai';
 import {ChatAnthropic} from '@langchain/anthropic';
+import {describe, it, beforeEach, afterEach} from 'vitest';
 
 describe('ChatModelProvider', () => {
   let provider: ChatModelProvider;
@@ -50,7 +55,7 @@ describe('ChatModelProvider', () => {
       provider: 'openai',
       apiKey: 'custom-openai-key',
       model: 'gpt-4',
-      temperature: 0.5
+      temperature: 0.5,
     });
     const model = provider.value();
     expect(model).to.be.instanceOf(ChatOpenAI);
@@ -61,7 +66,7 @@ describe('ChatModelProvider', () => {
       provider: 'anthropic',
       apiKey: 'custom-anthropic-key',
       model: 'claude-3-opus-20240229',
-      temperature: 0.3
+      temperature: 0.3,
     });
     const model = provider.value();
     expect(model).to.be.instanceOf(ChatAnthropic);

@@ -10,7 +10,9 @@ export interface OutputParserExtensionPoint {
 }
 
 @extensionPoint(OUTPUT_PARSER_EXTENSION_POINT_NAME)
-export class OutputParserExtensionPointImpl implements OutputParserExtensionPoint {
+export class OutputParserExtensionPointImpl
+  implements OutputParserExtensionPoint
+{
   constructor(
     @extensions.list(OUTPUT_PARSER_EXTENSION_POINT_NAME)
     public readonly outputParsers: OutputParser[] = [],
@@ -20,23 +22,23 @@ export class OutputParserExtensionPointImpl implements OutputParserExtensionPoin
     return this.outputParsers.map(({parse, ...rest}) => {
       // Create a custom output parser that extends BaseOutputParser
       // Create a custom parser that implements the required methods
-      const CustomParser = new class extends BaseOutputParser {
+      const CustomParser = new (class extends BaseOutputParser {
         name = rest.name;
         description = rest.description;
-        lc_namespace = ["langchain", "output_parsers", "custom"];
+        lc_namespace = ['langchain', 'output_parsers', 'custom'];
 
         async parse(text: string): Promise<unknown> {
           return parse(text);
         }
 
         getFormatInstructions(): string {
-          return "";
+          return '';
         }
 
         _type(): string {
-          return "custom_output_parser";
+          return 'custom_output_parser';
         }
-      }();
+      })();
 
       return CustomParser;
     });

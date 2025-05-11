@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import {Command, Flags, Args} from '@oclif/core'
-import * as fs from 'fs'
-import * as path from 'path'
+import {Command, Flags, Args} from '@oclif/core';
+import * as fs from 'fs';
+import * as path from 'path';
 
 class LB4LCCommand extends Command {
-  static description = 'LoopBack 4 LangChain CLI'
+  static description = 'LoopBack 4 LangChain CLI';
 
   static flags = {
     system: Flags.string({
@@ -21,7 +21,13 @@ class LB4LCCommand extends Command {
       required: false,
       char: 'd',
     }),
-  }
+    type: Flags.string({
+      description: 'Type of runnable (llm, chat_model, tool, chain, retriever)',
+      required: false,
+      options: ['llm', 'chat_model', 'tool', 'chain', 'retriever'],
+      default: 'chain',
+    }),
+  };
 
   static args = {
     command: Args.string({
@@ -32,79 +38,91 @@ class LB4LCCommand extends Command {
       description: 'Name of the resource',
       required: false,
     }),
-  }
+  };
 
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(LB4LCCommand)
+    const {args, flags} = await this.parse(LB4LCCommand);
 
     if (args.command === 'tool' && args.name) {
-      await this.generateTool(args.name)
+      await this.generateTool(args.name);
     } else if (args.command === 'prompt' && args.name) {
-      await this.generatePrompt(args.name, flags.system)
+      await this.generatePrompt(args.name, flags.system);
     } else if (args.command === 'system' && args.name) {
-      await this.generateSystem(args.name, flags.text)
+      await this.generateSystem(args.name, flags.text);
     } else if (args.command === 'retriever' && args.name) {
-      await this.generateRetriever(args.name, flags.datasource)
+      await this.generateRetriever(args.name, flags.datasource);
+    } else if (args.command === 'runnable' && args.name) {
+      await this.generateRunnable(args.name, flags.type);
     } else {
-      this.log('Welcome to LoopBack 4 LangChain CLI!')
-      this.log('Available commands:')
-      this.log('  tool <name> - Generate a new tool')
-      this.log('  prompt <name> [--system "..."] - Generate a new prompt')
-      this.log('  system <name> --text="..." - Generate a new system instruction file')
-      this.log('  retriever <name> --datasource <DS> - Generate a new retriever')
+      this.log('Welcome to LoopBack 4 LangChain CLI!');
+      this.log('Available commands:');
+      this.log('  tool <name> - Generate a new tool');
+      this.log('  prompt <name> [--system "..."] - Generate a new prompt');
+      this.log(
+        '  system <name> --text="..." - Generate a new system instruction file',
+      );
+      this.log(
+        '  retriever <name> --datasource <DS> - Generate a new retriever',
+      );
+      this.log(
+        '  runnable <name> [--type <type>] - Generate a new runnable JSON stub',
+      );
     }
   }
 
   private async generateTool(name: string): Promise<void> {
     // Ensure the tools directory exists
-    const toolsDir = path.join(process.cwd(), 'tools')
+    const toolsDir = path.join(process.cwd(), 'tools');
     if (!fs.existsSync(toolsDir)) {
-      fs.mkdirSync(toolsDir, {recursive: true})
+      fs.mkdirSync(toolsDir, {recursive: true});
     }
 
-    const fileName = `${name}.tool.ts`
-    const filePath = path.join(toolsDir, fileName)
+    const fileName = `${name}.tool.ts`;
+    const filePath = path.join(toolsDir, fileName);
 
     // Check if file already exists
     if (fs.existsSync(filePath)) {
-      this.error(`Tool file ${fileName} already exists in ${toolsDir}`)
-      return
+      this.error(`Tool file ${fileName} already exists in ${toolsDir}`);
+      return;
     }
 
     // Create the tool file content
-    const content = this.getToolTemplate(name)
+    const content = this.getToolTemplate(name);
 
     // Write the file
-    fs.writeFileSync(filePath, content)
-    this.log(`Created tool file: ${filePath}`)
+    fs.writeFileSync(filePath, content);
+    this.log(`Created tool file: ${filePath}`);
   }
 
-  private async generatePrompt(name: string, systemPrompt?: string): Promise<void> {
+  private async generatePrompt(
+    name: string,
+    systemPrompt?: string,
+  ): Promise<void> {
     // Ensure the prompts directory exists
-    const promptsDir = path.join(process.cwd(), 'prompts')
+    const promptsDir = path.join(process.cwd(), 'prompts');
     if (!fs.existsSync(promptsDir)) {
-      fs.mkdirSync(promptsDir, {recursive: true})
+      fs.mkdirSync(promptsDir, {recursive: true});
     }
 
-    const fileName = `${name}.prompt.ts`
-    const filePath = path.join(promptsDir, fileName)
+    const fileName = `${name}.prompt.ts`;
+    const filePath = path.join(promptsDir, fileName);
 
     // Check if file already exists
     if (fs.existsSync(filePath)) {
-      this.error(`Prompt file ${fileName} already exists in ${promptsDir}`)
-      return
+      this.error(`Prompt file ${fileName} already exists in ${promptsDir}`);
+      return;
     }
 
     // Create the prompt file content
-    const content = this.getPromptTemplate(name, systemPrompt)
+    const content = this.getPromptTemplate(name, systemPrompt);
 
     // Write the file
-    fs.writeFileSync(filePath, content)
-    this.log(`Created prompt file: ${filePath}`)
+    fs.writeFileSync(filePath, content);
+    this.log(`Created prompt file: ${filePath}`);
   }
 
   private getToolTemplate(name: string): string {
-    const className = name.charAt(0).toUpperCase() + name.slice(1) + 'Tool'
+    const className = name.charAt(0).toUpperCase() + name.slice(1) + 'Tool';
 
     return `import {langchainTools, Tool} from 'loopback4-langchain';
 import {z} from 'zod';
@@ -129,16 +147,16 @@ export class ${className} implements Tool {
     }
   }
 }
-`
+`;
   }
 
   private getPromptTemplate(name: string, systemPrompt?: string): string {
-    const className = name.charAt(0).toUpperCase() + name.slice(1) + 'Prompt'
-    const systemPromptSection = systemPrompt 
+    const className = name.charAt(0).toUpperCase() + name.slice(1) + 'Prompt';
+    const systemPromptSection = systemPrompt
       ? `\n  /**
    * System prompt
    */
-  systemPrompt = \`${systemPrompt}\`;` 
+  systemPrompt = \`${systemPrompt}\`;`
       : '';
 
     return `/**
@@ -166,36 +184,36 @@ ${systemPrompt ? 'System: ' + systemPrompt + '\n\n' : ''}User: \${input}
 \`.trim();
   }
 }
-`
+`;
   }
 
   private async generateSystem(name: string, text?: string): Promise<void> {
     // Ensure the systems directory exists
-    const systemsDir = path.join(process.cwd(), 'systems')
+    const systemsDir = path.join(process.cwd(), 'systems');
     if (!fs.existsSync(systemsDir)) {
-      fs.mkdirSync(systemsDir, {recursive: true})
+      fs.mkdirSync(systemsDir, {recursive: true});
     }
 
-    const fileName = `${name}.system.ts`
-    const filePath = path.join(systemsDir, fileName)
+    const fileName = `${name}.system.ts`;
+    const filePath = path.join(systemsDir, fileName);
 
     // Check if file already exists
     if (fs.existsSync(filePath)) {
-      this.error(`System file ${fileName} already exists in ${systemsDir}`)
-      return
+      this.error(`System file ${fileName} already exists in ${systemsDir}`);
+      return;
     }
 
     // Create the system file content
-    const content = this.getSystemTemplate(name, text)
+    const content = this.getSystemTemplate(name, text);
 
     // Write the file
-    fs.writeFileSync(filePath, content)
-    this.log(`Created system instruction file: ${filePath}`)
+    fs.writeFileSync(filePath, content);
+    this.log(`Created system instruction file: ${filePath}`);
   }
 
   private getSystemTemplate(name: string, text?: string): string {
-    const className = name.charAt(0).toUpperCase() + name.slice(1) + 'System'
-    const systemText = text || 'You are a helpful assistant.'
+    const className = name.charAt(0).toUpperCase() + name.slice(1) + 'System';
+    const systemText = text || 'You are a helpful assistant.';
 
     return `/**
  * System instruction for ${name}
@@ -224,36 +242,141 @@ export class ${className} {
     return this.text;
   }
 }
-`
+`;
   }
 
-  private async generateRetriever(name: string, datasource?: string): Promise<void> {
+  private async generateRetriever(
+    name: string,
+    datasource?: string,
+  ): Promise<void> {
     // Ensure the retrievers directory exists
-    const retrieversDir = path.join(process.cwd(), 'retrievers')
+    const retrieversDir = path.join(process.cwd(), 'retrievers');
     if (!fs.existsSync(retrieversDir)) {
-      fs.mkdirSync(retrieversDir, {recursive: true})
+      fs.mkdirSync(retrieversDir, {recursive: true});
     }
 
-    const fileName = `${name}.retriever.ts`
-    const filePath = path.join(retrieversDir, fileName)
+    const fileName = `${name}.retriever.ts`;
+    const filePath = path.join(retrieversDir, fileName);
 
     // Check if file already exists
     if (fs.existsSync(filePath)) {
-      this.error(`Retriever file ${fileName} already exists in ${retrieversDir}`)
-      return
+      this.error(
+        `Retriever file ${fileName} already exists in ${retrieversDir}`,
+      );
+      return;
     }
 
     // Create the retriever file content
-    const content = this.getRetrieverTemplate(name, datasource)
+    const content = this.getRetrieverTemplate(name, datasource);
 
     // Write the file
-    fs.writeFileSync(filePath, content)
-    this.log(`Created retriever file: ${filePath}`)
+    fs.writeFileSync(filePath, content);
+    this.log(`Created retriever file: ${filePath}`);
+  }
+
+  private async generateRunnable(
+    name: string,
+    type: string = 'chain',
+  ): Promise<void> {
+    // Ensure the configs/runnables directory exists
+    const runnablesDir = path.join(process.cwd(), 'configs', 'runnables');
+    if (!fs.existsSync(runnablesDir)) {
+      fs.mkdirSync(runnablesDir, {recursive: true});
+    }
+
+    const fileName = `${name}.json`;
+    const filePath = path.join(runnablesDir, fileName);
+
+    // Check if file already exists
+    if (fs.existsSync(filePath)) {
+      this.error(`Runnable file ${fileName} already exists in ${runnablesDir}`);
+      return;
+    }
+
+    // Create the runnable file content
+    const content = this.getRunnableTemplate(name, type);
+
+    // Write the file
+    fs.writeFileSync(filePath, content);
+    this.log(`Created runnable JSON stub: ${filePath}`);
+  }
+
+  private getRunnableTemplate(name: string, type: string): string {
+    const id = `${name.toLowerCase()}`;
+    const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+
+    const template: any = {
+      type: type,
+      id: id,
+      name: displayName,
+      description: `${displayName} runnable`,
+      metadata: {},
+      lc: {
+        type: `langchain.${type}s.base.Base${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        }`,
+        id: [
+          'langchain',
+          `${type}s`,
+          'base',
+          `Base${type.charAt(0).toUpperCase() + type.slice(1)}`,
+        ],
+      },
+    };
+
+    // Add type-specific configuration
+    switch (type) {
+      case 'llm':
+      case 'chat_model':
+        template.config = {
+          model: 'gpt-3.5-turbo',
+          temperature: 0.7,
+          max_tokens: 100,
+        };
+        break;
+      case 'tool':
+        template.config = {
+          schema: {
+            type: 'object',
+            properties: {
+              query: {type: 'string'},
+            },
+            required: ['query'],
+          },
+          func: `${id}Function`,
+        };
+        break;
+      case 'chain':
+        template.config = {
+          steps: [
+            {
+              id: 'step1',
+              type: 'llm',
+            },
+            {
+              id: 'step2',
+              type: 'tool',
+            },
+          ],
+        };
+        break;
+      case 'retriever':
+        template.config = {
+          search_type: 'similarity',
+          search_kwargs: {
+            k: 5,
+          },
+        };
+        break;
+    }
+
+    return JSON.stringify(template, null, 2);
   }
 
   private getRetrieverTemplate(name: string, datasource?: string): string {
-    const className = name.charAt(0).toUpperCase() + name.slice(1) + 'Retriever'
-    const dsName = datasource || 'DefaultDataSource'
+    const className =
+      name.charAt(0).toUpperCase() + name.slice(1) + 'Retriever';
+    const dsName = datasource || 'DefaultDataSource';
 
     return `import { inject } from '@loopback/core';
 import { Document } from '@langchain/core/documents';
@@ -328,18 +451,18 @@ export class ${className} extends BaseVectorRetriever<YourEntity, typeof YourEnt
     return this.repository.find({ limit: k });
   }
 }
-`
+`;
   }
 }
 
 // This is needed for oclif to properly handle the command
-module.exports = LB4LCCommand
+module.exports = LB4LCCommand;
 
 // This is needed to run the CLI when the file is executed directly
 if (require.main === module) {
-  const {run} = require('@oclif/core')
+  const {run} = require('@oclif/core');
   run().catch((err: Error) => {
-    console.error(err)
-    process.exit(1)
-  })
+    console.error(err);
+    process.exit(1);
+  });
 }

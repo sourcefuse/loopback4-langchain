@@ -2,6 +2,10 @@ import {BaseArtifactBooter, booter} from '@loopback/boot';
 import {Application, config, inject} from '@loopback/core';
 import {BootBindings} from '@loopback/boot';
 import path from 'path';
+import * as fs from 'fs';
+import {RUNNABLE_LOADER} from './keys';
+import {RunnableLoader, Runnable} from './runtime/runnable-loader';
+import * as yaml from 'yaml';
 
 /**
  * Default options for LangChainBooter
@@ -33,6 +37,11 @@ export const LangChainBooterDefaults = {
     extensions: ['.js', '.ts'],
     nested: true,
   },
+  runnables: {
+    dirs: ['.'],
+    extensions: ['.runnable.json', '.runnable.yaml'],
+    nested: true,
+  },
 };
 
 /**
@@ -49,6 +58,7 @@ export class LangChainBooter extends BaseArtifactBooter {
   private retrieversDiscovered: string[] = [];
   private chainsDiscovered: string[] = [];
   private systemsDiscovered: string[] = [];
+  private runnablesDiscovered: string[] = [];
 
   // Define options as a property with the expected structure
   public options: {
@@ -60,7 +70,8 @@ export class LangChainBooter extends BaseArtifactBooter {
   constructor(
     @inject('application') app: Application,
     @inject(BootBindings.PROJECT_ROOT) projectRoot: string,
-    @config() public artifactOptions: typeof LangChainBooterDefaults = LangChainBooterDefaults,
+    @config()
+    public artifactOptions: typeof LangChainBooterDefaults = LangChainBooterDefaults,
   ) {
     // Create options object for super() call
     const bootOptions = {
@@ -114,6 +125,10 @@ export class LangChainBooter extends BaseArtifactBooter {
     // Discover systems
     const systemsGlob = this.buildGlob(this.artifactOptions.systems);
     this.systemsDiscovered = await this.discoverWithGlob(systemsGlob);
+
+    // Discover runnables
+    const runnablesGlob = this.buildGlob(this.artifactOptions.runnables);
+    this.runnablesDiscovered = await this.discoverWithGlob(runnablesGlob);
   }
 
   /**
@@ -121,7 +136,9 @@ export class LangChainBooter extends BaseArtifactBooter {
    */
   async load() {
     // Load and bind prompts
-    const promptClasses = await this.loadClassesFromFiles(this.promptsDiscovered);
+    const promptClasses = await this.loadClassesFromFiles(
+      this.promptsDiscovered,
+    );
     this.bindArtifacts('prompts', promptClasses);
 
     // Load and bind tools
@@ -129,7 +146,9 @@ export class LangChainBooter extends BaseArtifactBooter {
     this.bindArtifacts('tools', toolClasses);
 
     // Load and bind retrievers
-    const retrieverClasses = await this.loadClassesFromFiles(this.retrieversDiscovered);
+    const retrieverClasses = await this.loadClassesFromFiles(
+      this.retrieversDiscovered,
+    );
     this.bindArtifacts('retrievers', retrieverClasses);
 
     // Load and bind chains
@@ -137,14 +156,72 @@ export class LangChainBooter extends BaseArtifactBooter {
     this.bindArtifacts('chains', chainClasses);
 
     // Load and bind systems
-    const systemClasses = await this.loadClassesFromFiles(this.systemsDiscovered);
+    const systemClasses = await this.loadClassesFromFiles(
+      this.systemsDiscovered,
+    );
     this.bindArtifacts('systems', systemClasses);
+
+    // Load and bind runnables
+    await this.loadAndBindRunnables(this.runnablesDiscovered);
+  }
+
+  /**
+   * Load and bind runnable files
+   * @param files Array of runnable file paths
+   */
+  private async loadAndBindRunnables(files: string[]) {
+    if (!files.length) return;
+
+    // Get the RunnableLoader from the application
+    const runnableLoader = await this.app.get(RUNNABLE_LOADER);
+
+    for (const file of files) {
+      try {
+        // Read the file content
+        const content = fs.readFileSync(file, 'utf-8');
+
+        // Parse the content based on file extension
+        let spec: Runnable;
+        if (file.endsWith('.runnable.json')) {
+          spec = JSON.parse(content);
+        } else if (file.endsWith('.runnable.yaml')) {
+          spec = yaml.parse(content);
+        } else {
+          // Skip files with unsupported extensions
+          continue;
+        }
+
+        // Load the runnable using the RunnableLoader
+        const runnable = await runnableLoader.load({spec});
+
+        // Bind the runnable to the application
+        const binding = this.app
+          .bind(`langchain.runnable.${runnable.id}`)
+          .to(runnable);
+
+        // Add metadata to the binding
+        binding.tag({
+          artifactType: 'runnable',
+          name: runnable.name,
+          type: runnable.type,
+        });
+
+        console.log(`Bound runnable ${runnable.id} from ${file}`);
+      } catch (error) {
+        // Log the error but continue with other files
+        console.error(`Error loading runnable from ${file}:`, error);
+      }
+    }
   }
 
   /**
    * Build a glob pattern for the given artifact options
    */
-  private buildGlob(artifactOptions: {dirs: string[], extensions: string[], nested: boolean}): string {
+  private buildGlob(artifactOptions: {
+    dirs: string[];
+    extensions: string[];
+    nested: boolean;
+  }): string {
     const {dirs, extensions, nested} = artifactOptions;
 
     let joinedDirs = dirs.join(',');
@@ -152,7 +229,8 @@ export class LangChainBooter extends BaseArtifactBooter {
       joinedDirs = `{${joinedDirs}}`;
     }
 
-    const joinedExts = extensions.length > 0 ? `@(${extensions.join('|')})` : '';
+    const joinedExts =
+      extensions.length > 0 ? `@(${extensions.join('|')})` : '';
 
     return `/${joinedDirs}/${nested ? '**/*' : '*'}${joinedExts}`;
   }
@@ -169,7 +247,9 @@ export class LangChainBooter extends BaseArtifactBooter {
    * Load classes from the given files
    */
   private async loadClassesFromFiles(files: string[]): Promise<object[]> {
-    const {loadClassesFromFiles} = require('@loopback/boot/dist/booters/booter-utils');
+    const {
+      loadClassesFromFiles,
+    } = require('@loopback/boot/dist/booters/booter-utils');
     return loadClassesFromFiles(files, this.projectRoot);
   }
 

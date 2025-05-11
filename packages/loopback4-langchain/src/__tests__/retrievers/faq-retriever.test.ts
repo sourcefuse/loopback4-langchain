@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { FaqRetriever } from '../../retrievers/faq-retriever';
-import { Document } from '@langchain/core/documents';
+import {describe, it, expect, beforeEach} from 'vitest';
+import {FaqRetriever} from '../../retrievers/faq-retriever';
+import {Document} from '@langchain/core/documents';
 
 describe('FaqRetriever', () => {
   let retriever: FaqRetriever;
@@ -9,16 +9,18 @@ describe('FaqRetriever', () => {
   const sampleFaqs = [
     {
       question: 'What is LangChain?',
-      answer: 'LangChain is a framework for developing applications powered by language models.'
+      answer:
+        'LangChain is a framework for developing applications powered by language models.',
     },
     {
       question: 'How do I install LangChain?',
-      answer: 'You can install LangChain using npm: npm install langchain'
+      answer: 'You can install LangChain using npm: npm install langchain',
     },
     {
       question: 'What is LoopBack?',
-      answer: 'LoopBack is a highly extensible Node.js and TypeScript framework for building APIs and microservices.'
-    }
+      answer:
+        'LoopBack is a highly extensible Node.js and TypeScript framework for building APIs and microservices.',
+    },
   ];
 
   beforeEach(() => {
@@ -44,7 +46,8 @@ describe('FaqRetriever', () => {
   it('should add new FAQs', () => {
     // Add a new FAQ
     const newQuestion = 'What is a retriever?';
-    const newAnswer = 'A retriever is a component that fetches relevant documents from a data source.';
+    const newAnswer =
+      'A retriever is a component that fetches relevant documents from a data source.';
     retriever.addFaq(newQuestion, newAnswer);
 
     // Check if the new FAQ is retrievable
@@ -74,7 +77,10 @@ describe('FaqRetriever', () => {
     const query = 'LangChain';
     return retriever.getRelevantDocuments(query).then(docs => {
       expect(docs[0]).toBeInstanceOf(Document);
-      expect(docs[0].metadata).toHaveProperty('question', sampleFaqs[0].question);
+      expect(docs[0].metadata).toHaveProperty(
+        'question',
+        sampleFaqs[0].question,
+      );
       expect(docs[0].metadata).toHaveProperty('source', 'faq');
     });
   });

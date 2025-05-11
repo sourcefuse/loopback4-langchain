@@ -30,12 +30,15 @@ export class CalculatorTool implements Tool {
 The `ToolsExampleController` demonstrates how to use LangChain tools and output parsers:
 
 1. **Direct Tool Execution**: Execute the calculator tool directly
+
    - Endpoint: `POST /tools/calculator`
 
 2. **LLM Generation with Tools**: Generate a response using the LLM with the calculator tool
+
    - Endpoint: `GET /tools/generate?prompt=your_prompt_here`
 
 3. **Structured Output Parsing**: Parse the output of the LLM response using a structured output parser
+
    - Endpoint: `POST /tools/parse`
    - Body: `{ "prompt": "your_prompt_here" }`
 

@@ -28,5 +28,8 @@ import {asTool} from '../types/tools.types';
  * ```
  */
 export function langchainTools() {
-  return ClassDecoratorFactory.createDecorator<object>('langchain.tools', asTool);
+  return ClassDecoratorFactory.createDecorator<object>(
+    'langchain.tools',
+    asTool,
+  );
 }

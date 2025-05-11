@@ -42,7 +42,7 @@ export class MyController {
     // Using an output parser
     const parsedResult = await this.langChainService.generateAndParse(
       'Generate a JSON object with name and age fields',
-      'json-parser' // Name of your registered output parser
+      'json-parser', // Name of your registered output parser
     );
     return parsedResult;
   }
@@ -104,6 +104,18 @@ npx lb4lc system assistant --text="You are a helpful assistant that provides con
 # Creates systems/assistant.system.ts
 ```
 
+- `runnable <name> [--type <type>]`: Generate a new runnable JSON stub in the `configs/runnables` directory. The type can be one of: llm, chat_model, tool, chain, retriever (defaults to chain).
+
+Example:
+
+```sh
+npx lb4lc runnable myChain
+# Creates configs/runnables/mychain.json with a chain runnable stub
+
+npx lb4lc runnable myLLM --type llm
+# Creates configs/runnables/myllm.json with an LLM runnable stub
+```
+
 ## API Documentation
 
 ### Components
@@ -115,6 +127,7 @@ npx lb4lc system assistant --text="You are a helpful assistant that provides con
 - `LangChainService`: The main service that provides access to LangChain functionality
 
   Methods:
+
   - `getChatModel()`: Get the LangChain Groq chat model instance
   - `generateText(prompt: string)`: Generate text using the chat model
   - `getOutputParsers()`: Get all registered output parsers

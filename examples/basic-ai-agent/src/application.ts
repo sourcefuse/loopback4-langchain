@@ -9,7 +9,11 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import {LangChainComponent, LANGCHAIN_OPTIONS, LangChainOptions} from 'loopback4-langchain';
+import {
+  LangChainComponent,
+  LANGCHAIN_OPTIONS,
+  LangChainOptions,
+} from 'loopback4-langchain';
 import {RedisDataSource} from './datasources/redis.datasource';
 
 export {ApplicationConfig};

@@ -39,7 +39,11 @@ export class ToolsExampleController {
         },
       },
     })
-    args: {operation: string; a: number; b: number},
+    args: {
+      operation: string;
+      a: number;
+      b: number;
+    },
   ): Promise<{result: string}> {
     // Format the args object as a string in the format expected by the calculator tool
     const inputStr = `operation: ${args.operation}, a: ${args.a}, b: ${args.b}`;
@@ -76,16 +80,22 @@ export class ToolsExampleController {
         },
       },
     })
-    args: {prompt: string},
+    args: {
+      prompt: string;
+    },
   ): Promise<{parsed: unknown}> {
     // Create a structured output parser
     const parser = StructuredOutputParser.fromZodSchema(
       z.object({
         operation: z.string().describe('The mathematical operation performed'),
-        numbers: z.array(z.number()).describe('The numbers used in the calculation'),
+        numbers: z
+          .array(z.number())
+          .describe('The numbers used in the calculation'),
         result: z.number().describe('The result of the calculation'),
-        explanation: z.string().describe('A brief explanation of the calculation'),
-      })
+        explanation: z
+          .string()
+          .describe('A brief explanation of the calculation'),
+      }),
     );
 
     // Format the prompt with the parser instructions

@@ -20,11 +20,13 @@ The Basic AI Agent example shows how to:
 ## 🛠️ Setup
 
 1. Install dependencies:
+
    ```sh
    npm install
    ```
 
 2. Set up environment variables:
+
    ```sh
    # Create a .env file in the root of the example
    echo "GROQ_API_KEY=your_api_key_here" > .env
@@ -38,6 +40,7 @@ The Basic AI Agent example shows how to:
 ## 🏃‍♂️ Running the Application
 
 Start the application:
+
 ```sh
 npm start
 ```

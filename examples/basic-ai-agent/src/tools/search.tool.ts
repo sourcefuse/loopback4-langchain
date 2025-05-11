@@ -7,10 +7,13 @@ import {z} from 'zod';
 @langchainTools()
 export class SearchTool implements Tool {
   name = 'search';
-  description = 'Search for information on the web. Use this when you need to find facts, data, or information that you don\'t already know.';
-  schema = z.object({
-    input: z.string().optional(),
-  }).transform(input => input.input || "");
+  description =
+    "Search for information on the web. Use this when you need to find facts, data, or information that you don't already know.";
+  schema = z
+    .object({
+      input: z.string().optional(),
+    })
+    .transform(input => input.input || '');
 
   async run(query: string): Promise<string> {
     try {
@@ -25,17 +28,25 @@ export class SearchTool implements Tool {
         return this.getWeatherSearchResults(normalizedQuery);
       } else if (normalizedQuery.includes('news')) {
         return this.getNewsSearchResults(normalizedQuery);
-      } else if (normalizedQuery.includes('recipe') || normalizedQuery.includes('food')) {
+      } else if (
+        normalizedQuery.includes('recipe') ||
+        normalizedQuery.includes('food')
+      ) {
         return this.getRecipeSearchResults(normalizedQuery);
       } else if (normalizedQuery.includes('history')) {
         return this.getHistorySearchResults(normalizedQuery);
-      } else if (normalizedQuery.includes('technology') || normalizedQuery.includes('tech')) {
+      } else if (
+        normalizedQuery.includes('technology') ||
+        normalizedQuery.includes('tech')
+      ) {
         return this.getTechnologySearchResults(normalizedQuery);
       } else {
         return this.getGenericSearchResults(normalizedQuery);
       }
     } catch (error) {
-      return `Error performing search: ${error instanceof Error ? error.message : String(error)}`;
+      return `Error performing search: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
     }
   }
 

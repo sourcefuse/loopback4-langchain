@@ -6,6 +6,7 @@ import {
 import * as sinon from 'sinon';
 import {ChatGroq} from '@langchain/groq';
 import {Tool} from 'langchain/tools';
+import {describe, it, beforeEach, afterEach} from 'vitest';
 
 describe('LangChainService', () => {
   let service: LangChainService;

@@ -22,14 +22,14 @@ const config = {
 // gracefully. The `stop()` method is inherited from `juggler.DataSource`.
 // Learn more at https://loopback.io/doc/en/lb4/Life-cycle.html
 @lifeCycleObserver('datasource')
-export class RedisDataSource extends juggler.DataSource
-  implements LifeCycleObserver {
+export class RedisDataSource
+  extends juggler.DataSource
+  implements LifeCycleObserver
+{
   static dataSourceName = 'Redis';
   static readonly defaultConfig = config;
 
-  constructor(
-    dsConfig: object = config,
-  ) {
+  constructor(dsConfig: object = config) {
     super(dsConfig);
   }
 }

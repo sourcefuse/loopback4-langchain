@@ -60,18 +60,18 @@ import {LangChainBindings, LangChainOptions} from 'loopback4-langchain';
 // In your application class:
 // For Groq (default provider)
 const groqOptions: LangChainOptions = {
-  provider: 'groq',                  // Specify the provider (optional, defaults to 'groq')
-  apiKey: process.env.GROQ_API_KEY,  // Or provide directly
-  model: 'llama3-8b-8192',           // Default model for Groq
-  temperature: 0.7,                  // Default temperature
+  provider: 'groq', // Specify the provider (optional, defaults to 'groq')
+  apiKey: process.env.GROQ_API_KEY, // Or provide directly
+  model: 'llama3-8b-8192', // Default model for Groq
+  temperature: 0.7, // Default temperature
 };
 
 // OR for Anthropic
 const anthropicOptions: LangChainOptions = {
-  provider: 'anthropic',                  // Specify the provider as 'anthropic'
-  apiKey: process.env.ANTHROPIC_API_KEY,  // Or provide directly
-  model: 'claude-3-haiku-20240307',       // Default model for Anthropic
-  temperature: 0.7,                       // Default temperature
+  provider: 'anthropic', // Specify the provider as 'anthropic'
+  apiKey: process.env.ANTHROPIC_API_KEY, // Or provide directly
+  model: 'claude-3-haiku-20240307', // Default model for Anthropic
+  temperature: 0.7, // Default temperature
 };
 
 // Bind the options to the application
@@ -131,12 +131,14 @@ export class WeatherTool implements Tool {
 ### Setup
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/sourcefuse/loopback4-langchain.git
    cd loopback4-langchain
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -149,6 +151,7 @@ export class WeatherTool implements Tool {
 ### Running the Example
 
 1. Set up environment variables:
+
    ```bash
    # Create a .env file in examples/basic-ai-agent
    # For Groq
@@ -159,6 +162,7 @@ export class WeatherTool implements Tool {
    ```
 
 2. Start the example application:
+
    ```bash
    cd examples/basic-ai-agent
    npm start

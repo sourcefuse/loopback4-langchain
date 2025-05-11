@@ -14,3 +14,4 @@ export * from './booter';
 export * from './observers/langchain.observer';
 export * from './retrievers/base-vector-retriever';
 export * from './retrievers/faq-retriever';
+export * from './runtime/runnable-loader';

@@ -48,6 +48,7 @@ This project adheres to our [Code of Conduct](CODE_OF_CONDUCT.md). By participat
 ## Development Workflow
 
 1. Create a new branch for your feature or bugfix:
+
    ```bash
    git checkout -b feature/your-feature-name
    # or
@@ -57,6 +58,7 @@ This project adheres to our [Code of Conduct](CODE_OF_CONDUCT.md). By participat
 2. Make your changes and ensure they follow the project's coding standards
 
 3. Run tests to ensure your changes don't break existing functionality:
+
    ```bash
    npm test
    ```
@@ -64,6 +66,7 @@ This project adheres to our [Code of Conduct](CODE_OF_CONDUCT.md). By participat
 4. Commit your changes following the [commit message guidelines](#commit-message-guidelines)
 
 5. Push your branch to your fork:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -84,6 +87,7 @@ This project adheres to our [Code of Conduct](CODE_OF_CONDUCT.md). By participat
 This project uses ESLint and Prettier to enforce coding standards:
 
 - Run linting checks:
+
   ```bash
   npm run lint
   ```
@@ -106,6 +110,7 @@ This project uses ESLint and Prettier to enforce coding standards:
 - Tests should be clear and easy to understand
 
 To run tests:
+
 ```bash
 npm test
 ```

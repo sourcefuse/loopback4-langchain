@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BaseVectorRetriever } from '../../retrievers/base-vector-retriever';
-import { Document } from '@langchain/core/documents';
-import { DefaultCrudRepository, Entity } from '@loopback/repository';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
+import {BaseVectorRetriever} from '../../retrievers/base-vector-retriever';
+import {Document} from '@langchain/core/documents';
+import {DefaultCrudRepository, Entity} from '@loopback/repository';
 
 // Mock entity type for testing
 class MockEntity implements Entity {
@@ -20,7 +20,7 @@ class MockEntity implements Entity {
   }
 
   getIdObject() {
-    return { id: this.id };
+    return {id: this.id};
   }
 
   toJSON() {
@@ -39,11 +39,13 @@ class MockEntity implements Entity {
 
 // Concrete implementation for testing
 class TestVectorRetriever {
-  constructor(private repository: DefaultCrudRepository<MockEntity, string, {}>) {}
+  constructor(
+    private repository: DefaultCrudRepository<MockEntity, string, {}>,
+  ) {}
 
   // Implementation of retriever methods
   async getRelevantDocuments(query: string): Promise<Document[]> {
-    const entities = await this.vectorSearch(query, { k: 5 });
+    const entities = await this.vectorSearch(query, {k: 5});
     return entities.map(entity => this.entityToDocument(entity));
   }
 
@@ -57,7 +59,7 @@ class TestVectorRetriever {
 
   protected async vectorSearch(
     query: number[] | string,
-    options?: { k?: number; filter?: object; [key: string]: unknown }
+    options?: {k?: number; filter?: object; [key: string]: unknown},
   ): Promise<MockEntity[]> {
     // In a real implementation, this would call the repository's vectorSearch method
     // For testing, we'll just return the mock results
@@ -75,14 +77,14 @@ describe('BaseVectorRetriever', () => {
       id: '1',
       content: 'This is the first document',
       embedding: [0.1, 0.2, 0.3],
-      metadata: { source: 'test' }
+      metadata: {source: 'test'},
     }),
     new MockEntity({
       id: '2',
       content: 'This is the second document',
       embedding: [0.4, 0.5, 0.6],
-      metadata: { source: 'test' }
-    })
+      metadata: {source: 'test'},
+    }),
   ];
 
   beforeEach(() => {

@@ -40,7 +40,11 @@ Format the response in a clear, readable way.
    * @param timeframe Optional timeframe (today, tomorrow, this week)
    * @returns A formatted prompt string
    */
-  compareLocations(location1: string, location2: string, timeframe: string = 'today'): string {
+  compareLocations(
+    location1: string,
+    location2: string,
+    timeframe: string = 'today',
+  ): string {
     return `
 Compare the weather ${timeframe} between ${location1} and ${location2}.
 

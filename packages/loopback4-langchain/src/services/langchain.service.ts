@@ -26,7 +26,7 @@ export class LangChainService {
   private outputParsers: BaseOutputParser[] = [];
 
   constructor(
-    options: LangChainOptions = {}, 
+    options: LangChainOptions = {},
     tools: Tool[] = [],
     outputParsers: BaseOutputParser[] = [],
   ) {
@@ -69,7 +69,11 @@ export class LangChainService {
     }
 
     // Initialize tools
-    if (tools.length > 0 && this.chatModel && typeof this.chatModel.bindTools === 'function') {
+    if (
+      tools.length > 0 &&
+      this.chatModel &&
+      typeof this.chatModel.bindTools === 'function'
+    ) {
       this.chatModel.bindTools(tools);
       const toolsByName = Object.fromEntries(
         tools.map(tool => [tool.name, tool]),

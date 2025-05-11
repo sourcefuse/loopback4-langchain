@@ -7,10 +7,13 @@ import {z} from 'zod';
 @langchainTools()
 export class CalculatorTool implements Tool {
   name = 'calculator';
-  description = 'A calculator that can perform basic arithmetic operations (add, subtract, multiply, divide)';
-  schema = z.object({
-    input: z.string().optional(),
-  }).transform(input => input.input || "");
+  description =
+    'A calculator that can perform basic arithmetic operations (add, subtract, multiply, divide)';
+  schema = z
+    .object({
+      input: z.string().optional(),
+    })
+    .transform(input => input.input || '');
 
   async run(input: string): Promise<string> {
     try {
@@ -32,7 +35,7 @@ export class CalculatorTool implements Tool {
       const b = parseFloat(bMatch[1]);
 
       if (isNaN(a) || isNaN(b)) {
-        return "Invalid numbers provided";
+        return 'Invalid numbers provided';
       }
 
       let result: number;
@@ -58,7 +61,9 @@ export class CalculatorTool implements Tool {
 
       return `Result of ${operation}(${a}, ${b}) = ${result}`;
     } catch (error) {
-      return `Error processing calculation: ${error instanceof Error ? error.message : String(error)}`;
+      return `Error processing calculation: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
     }
   }
 }
