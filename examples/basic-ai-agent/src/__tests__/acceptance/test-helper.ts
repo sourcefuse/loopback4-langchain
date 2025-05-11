@@ -21,7 +21,8 @@ export async function setupApplication(): Promise<AppWithClient> {
   await app.boot();
   await app.start();
 
-  const client = createRestAppClient(app);
+  // Use type assertion to help TypeScript understand the expected types
+  const client = createRestAppClient(app as any);
 
   return {app, client};
 }

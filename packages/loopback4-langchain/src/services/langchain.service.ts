@@ -35,6 +35,11 @@ export class LangChainService {
 
     if (provider === 'anthropic') {
       const apiKey = options.apiKey ?? process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        throw new Error(
+          'Anthropic API key is required. Please provide it via options or set the ANTHROPIC_API_KEY environment variable.',
+        );
+      }
       // Default to Claude 3 Haiku model
       const modelName = options.model ?? 'claude-3-haiku-20240307';
 
@@ -47,6 +52,11 @@ export class LangChainService {
     } else {
       // Default to Groq
       const apiKey = options.apiKey ?? process.env.GROQ_API_KEY;
+      if (!apiKey) {
+        throw new Error(
+          'Groq API key is required. Please provide it via options or set the GROQ_API_KEY environment variable.',
+        );
+      }
       // Default to Llama 3 8B model
       const modelName = options.model ?? 'llama3-8b-8192';
 

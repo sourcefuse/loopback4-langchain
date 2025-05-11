@@ -17,9 +17,11 @@ export class ToolExtensionPointImpl implements ToolExtensionPoint {
   ) {}
 
   getTools(): LCToolType[] {
-    return this.tools.map(({run, ...rest}) =>
+    return this.tools.map(({run, name, description, schema}) =>
       tool(run, {
-        ...rest,
+        name,
+        description,
+        schema: schema as any,
       }),
     );
   }
