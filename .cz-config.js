@@ -58,4 +58,4 @@ module.exports = {
   breaklineChar: '|', // It is supported for fields body and footer.
   footerPrefix: '',
   askForBreakingChangeFirst: true, // default is false
-};
+}

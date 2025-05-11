@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Bot</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .api-section {
+      margin-top: 30px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Support Bot Demo</h1>
+  <p>
+    This is a demo LoopBack application that provides a chat API for a support bot.
+    The application uses the LangChain component to interact with language models.
+  </p>
+
+  <div class="api-section">
+    <h2>API Endpoints</h2>
+    
+    <h3>Send a message</h3>
+    <p><code>POST /chat</code></p>
+    <p>Send a message to the chat bot and get a response.</p>
+    <pre>
+// Request body
+{
+  "message": "Hello, I need help with my order",
+  "sessionId": "user123"
+}
+
+// Response
+{
+  "sessionId": "user123",
+  "response": "Hello! I'd be happy to help with your order. Could you please provide your order number so I can look up the details?"
+}
+    </pre>
+
+    <h3>Get chat history</h3>
+    <p><code>GET /chat/{sessionId}</code></p>
+    <p>Retrieve the chat history for a specific session.</p>
+    <pre>
+// Response
+{
+  "sessionId": "user123",
+  "messages": [
+    {
+      "type": "human",
+      "content": "Hello, I need help with my order"
+    },
+    {
+      "type": "ai",
+      "content": "Hello! I'd be happy to help with your order. Could you please provide your order number so I can look up the details?"
+    }
+  ]
+}
+    </pre>
+
+    <h3>Clear chat history</h3>
+    <p><code>GET /chat/{sessionId}/clear</code></p>
+    <p>Clear the chat history for a specific session.</p>
+    <pre>
+// Response
+{
+  "success": true,
+  "message": "Chat history cleared"
+}
+    </pre>
+  </div>
+
+  <div class="api-section">
+    <h2>API Explorer</h2>
+    <p>
+      You can explore the API using the built-in Swagger UI at <a href="/explorer">/explorer</a>.
+    </p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "watch": [
+    "examples/basic-ai-agent/src/prompts/",
+    "examples/basic-ai-agent/src/tools/",
+    "packages/loopback4-langchain/src/retrievers/",
+    "packages/loopback4-langchain/src/chains/"
+  ],
+  "ext": "js,ts,json,yaml",
+  "ignore": [
+    "*.test.ts",
+    "*.spec.ts",
+    "node_modules"
+  ],
+  "exec": "npm run build && npm run start --workspace=basic-ai-agent"
+}

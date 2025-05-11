@@ -1,9 +1,12 @@
-# !/bin/sh
-# . "$(dirname "$0")/_/husky.sh"
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
 
 # print current NPM and Node version
 npm --version;
 node --version;
+
+# Run lint-staged to lint and format staged files
+npx lint-staged
 
 arch="$(uname -m)"  # -i is only linux, -m is linux and apple
 if test "$arch" = x86_64; then

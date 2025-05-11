@@ -1,26 +1,28 @@
 {
-  "name": "loopback4-langchain",
+  "name": "loopback4-langchain-monorepo",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "Monorepo for loopback4-langchain",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
   "scripts": {
-    "build": "npm run clean && lb-tsc",
-    "build:watch": "npm run clean && lb-tsc --watch",
-    "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
+    "prepare": "husky install",
     "lint": "npm run prettier:check && npm run eslint",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
-    "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
-    "prettier:check": "npm run prettier:cli -- -l",
+    "prettier:cli": "prettier \"**/*.ts\" \"**/*.js\"",
+    "prettier:check": "npm run prettier:cli -- --check",
     "prettier:fix": "npm run prettier:cli -- --write",
-    "eslint": "lb-eslint --report-unused-disable-directives .",
+    "eslint": "eslint --ext .js,.ts .",
     "eslint:fix": "npm run eslint -- --fix",
-    "prepare": "husky install",
-    "pretest": "npm run clean && npm run build",
-    "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
-    "posttest": "npm run lint",
-    "prepublishOnly": "npm run test",
-    "coverage": "nyc npm run test"
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "clean": "npm run clean --workspaces",
+    "dev": "npm run dev --workspace=support-bot",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish"
   },
   "repository": {
     "type": "git",
@@ -34,6 +36,7 @@
   },
   "homepage": "https://github.com/sourcefuse/loopback4-langchain#readme",
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
@@ -41,10 +44,20 @@
     "@loopback/eslint-config": "^15.0.5",
     "@loopback/testlab": "^7.0.12",
     "@types/node": "^22.14.1",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "commitizen": "^4.3.1",
     "cz-customizable": "^7.4.0",
     "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
     "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
+    "nodemon": "^3.0.1",
     "nyc": "^17.1.0",
     "sinon": "^20.0.0",
     "typescript": "^5.8.3"
@@ -60,5 +73,14 @@
     "commitizen": {
       "path": "./node_modules/cz-customizable"
     }
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }
