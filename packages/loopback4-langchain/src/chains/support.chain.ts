@@ -7,16 +7,22 @@ import {z} from 'zod';
 
 // Define the schema for support responses
 const supportResponseSchema = z.object({
-  category: z.string().describe('The category of the support request (e.g., technical, billing, feature)'),
-  priority: z.enum(['low', 'medium', 'high', 'critical']).describe('The priority level of the request'),
-  summary: z.string().describe('A brief summary of the customer\'s issue'),
+  category: z
+    .string()
+    .describe(
+      'The category of the support request (e.g., technical, billing, feature)',
+    ),
+  priority: z
+    .enum(['low', 'medium', 'high', 'critical'])
+    .describe('The priority level of the request'),
+  summary: z.string().describe("A brief summary of the customer's issue"),
   response: z.string().describe('A helpful response to the customer'),
   nextSteps: z.array(z.string()).describe('Suggested next steps or actions'),
 });
 
 /**
  * A support chain that handles customer support requests.
- * 
+ *
  * This chain processes support requests and generates structured responses
  * with categorization, priority, and suggested actions.
  */
@@ -25,7 +31,7 @@ export class SupportChain extends BaseChain {
 
   /**
    * Constructor with dependency injection
-   * 
+   *
    * @param chatModel - The chat model to use for generating responses
    * @param options - Optional configuration options for the chain
    */
@@ -40,7 +46,9 @@ export class SupportChain extends BaseChain {
     super(options);
 
     // Create a structured output parser for support responses
-    this.outputParser = StructuredOutputParser.fromZodSchema(supportResponseSchema);
+    this.outputParser = StructuredOutputParser.fromZodSchema(
+      supportResponseSchema,
+    );
   }
 
   /**
@@ -59,13 +67,14 @@ export class SupportChain extends BaseChain {
 
   /**
    * Run the chain with the provided input
-   * 
+   *
    * @param values - The input values for the chain
    * @returns A promise that resolves to the output values
    */
   async _call(values: ChainValues): Promise<ChainValues> {
     const query = values.query as string;
-    const template = this.options.template || 
+    const template =
+      this.options.template ||
       `You are a helpful customer support assistant. Analyze the following customer query and provide a structured response.
 
       Customer Query: {query}
@@ -76,9 +85,10 @@ export class SupportChain extends BaseChain {
 
     const response = await this.chatModel.invoke(formattedTemplate);
     // Convert MessageContent to string if needed
-    const content = typeof response.content === 'string' 
-      ? response.content 
-      : JSON.stringify(response.content);
+    const content =
+      typeof response.content === 'string'
+        ? response.content
+        : JSON.stringify(response.content);
     const parsedResponse = await this.outputParser.parse(content);
 
     return {

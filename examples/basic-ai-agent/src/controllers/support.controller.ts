@@ -54,7 +54,8 @@ export class SupportController {
   async getSupportChainInfo(): Promise<object> {
     return {
       name: 'SupportChain',
-      description: 'A chain that processes customer support requests and generates structured responses',
+      description:
+        'A chain that processes customer support requests and generates structured responses',
       inputKeys: this.supportChain.inputKeys,
       outputKeys: this.supportChain.outputKeys,
     };

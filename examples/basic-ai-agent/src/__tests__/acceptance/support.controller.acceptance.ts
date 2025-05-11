@@ -16,7 +16,12 @@ describe('SupportController', () => {
 
   it('invokes GET /support/info', async () => {
     const res = await client.get('/support/info').expect(200);
-    expect(res.body).to.have.properties(['name', 'description', 'inputKeys', 'outputKeys']);
+    expect(res.body).to.have.properties([
+      'name',
+      'description',
+      'inputKeys',
+      'outputKeys',
+    ]);
     expect(res.body.name).to.equal('SupportChain');
     expect(res.body.inputKeys).to.containEql('query');
     expect(res.body.outputKeys).to.containEql('result');

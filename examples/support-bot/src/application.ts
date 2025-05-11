@@ -18,7 +18,7 @@ import {RedisDataSource} from './datasources/redis.datasource';
 
 export {ApplicationConfig};
 
-export class BasicAiAgentApplication extends BootMixin(
+export class SupportBotApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
@@ -39,17 +39,17 @@ export class BasicAiAgentApplication extends BootMixin(
     // Register the Redis datasource
     this.dataSource(new RedisDataSource());
 
-    // Configure LangChain with Anthropic
-    const anthropicOptions: LangChainOptions = {
-      provider: 'anthropic',
+    // Configure LangChain with default options
+    const langchainOptions: LangChainOptions = {
+      provider: 'groq',
       // Use a mock API key for testing
-      apiKey: process.env.ANTHROPIC_API_KEY || 'mock-api-key-for-testing',
-      model: 'claude-3-haiku-20240307',
+      apiKey: process.env.GROQ_API_KEY || 'mock-api-key-for-testing',
+      model: 'llama3-8b-8192',
       temperature: 0.7,
       systemPrompt:
-        'You are an AI assistant that helps users with various tasks. You have access to tools that can perform specific functions. Use these tools when appropriate to provide the most helpful response.',
+        'You are a helpful support bot. Your goal is to assist users with their questions and problems in a friendly and professional manner. Provide clear, concise, and accurate information.',
     };
-    this.bind(LANGCHAIN_OPTIONS).to(anthropicOptions);
+    this.bind(LANGCHAIN_OPTIONS).to(langchainOptions);
 
     // Register the LangChain component
     this.component(LangChainComponent);

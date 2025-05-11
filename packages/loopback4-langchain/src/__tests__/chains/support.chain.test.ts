@@ -14,13 +14,14 @@ describe('SupportChain', () => {
           category: 'technical',
           priority: 'medium',
           summary: 'User is having trouble accessing their account',
-          response: 'I understand you\'re having trouble accessing your account. Let me help you with that.',
+          response:
+            "I understand you're having trouble accessing your account. Let me help you with that.",
           nextSteps: [
             'Try resetting your password',
             'Check if your account is locked',
-            'Contact support if the issue persists'
-          ]
-        })
+            'Contact support if the issue persists',
+          ],
+        }),
       }),
       // Add other required properties/methods
       _llmType: vi.fn().mockReturnValue('mock'),
@@ -87,7 +88,7 @@ describe('SupportChain', () => {
     (mockChatModel.invoke as any).mockRejectedValue(new Error('Test error'));
 
     const query = 'Test query';
-    
+
     // Expect the chain to throw an error
     await expect(supportChain.call({query})).rejects.toThrow();
   });

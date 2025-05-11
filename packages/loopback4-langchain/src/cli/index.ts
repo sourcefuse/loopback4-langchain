@@ -73,9 +73,7 @@ class LB4LCCommand extends Command {
       this.log(
         '  runnable <name> [--type <type>] - Generate a new runnable JSON stub',
       );
-      this.log(
-        '  chain <name> [--from <runnableName>] - Generate a new chain',
-      );
+      this.log('  chain <name> [--from <runnableName>] - Generate a new chain');
     }
   }
 
@@ -382,7 +380,10 @@ export class ${className} {
     return JSON.stringify(template, null, 2);
   }
 
-  private async generateChain(name: string, runnableName?: string): Promise<void> {
+  private async generateChain(
+    name: string,
+    runnableName?: string,
+  ): Promise<void> {
     // Ensure the chains directory exists
     const chainsDir = path.join(process.cwd(), 'chains');
     if (!fs.existsSync(chainsDir)) {

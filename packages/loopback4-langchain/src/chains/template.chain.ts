@@ -5,14 +5,14 @@ import {ChainValues} from '@langchain/core/utils/types';
 
 /**
  * A template chain class that demonstrates constructor injection.
- * 
+ *
  * This class can be used as a starting point for creating custom chains
  * in a LoopBack 4 application with LangChain integration.
  */
 export class TemplateChain extends BaseChain {
   /**
    * Constructor with dependency injection
-   * 
+   *
    * @param chatModel - The chat model to use for generating responses
    * @param options - Optional configuration options for the chain
    */
@@ -43,7 +43,7 @@ export class TemplateChain extends BaseChain {
 
   /**
    * Run the chain with the provided input
-   * 
+   *
    * @param values - The input values for the chain
    * @returns A promise that resolves to the output values
    */

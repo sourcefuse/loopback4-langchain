@@ -1,7 +1,7 @@
 {
-  "name": "basic-ai-agent",
+  "name": "support-bot",
   "version": "0.0.1",
-  "description": "Basic implementation of AI Agent ",
+  "description": "Demo LoopBack app with chat controller",
   "keywords": [
     "loopback-application",
     "loopback"
@@ -16,17 +16,17 @@
     "build:watch": "lb-tsc --watch",
     "lint": "npm run eslint || true && npm run prettier:check || true",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
-    "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
+    "prettier:cli": "prettier \"src/**/*.ts\"",
     "prettier:check": "npm run prettier:cli -- -l || true",
     "prettier:fix": "npm run prettier:cli -- --write",
-    "eslint": "lb-eslint --report-unused-disable-directives . || true",
+    "eslint": "eslint --report-unused-disable-directives . || true",
     "eslint:fix": "npm run eslint -- --fix",
     "pretest": "npm run rebuild",
     "test": "vitest run",
     "posttest": "npm run lint",
     "test:dev": "vitest",
-    "docker:build": "docker build -t basic-ai-agent .",
-    "docker:run": "docker run -p 3000:3000 -d basic-ai-agent",
+    "docker:build": "docker build -t support-bot .",
+    "docker:run": "docker run -p 3000:3000 -d support-bot",
     "premigrate": "npm run build",
     "migrate": "node ./dist/migrate",
     "preopenapi-spec": "npm run build",
@@ -41,7 +41,7 @@
     "type": "git",
     "url": ""
   },
-  "author": "Hitesh Gupta <hiteshgupta3012@gmail.com>",
+  "author": "",
   "license": "",
   "files": [
     "README.md",
@@ -58,8 +58,7 @@
     "@loopback/service-proxy": "^7.0.13",
     "loopback-connector-redis": "^3.0.0",
     "loopback4-langchain": "^1.0.0",
-    "tslib": "^2.0.0",
-    "zod": "^3.22.4"
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@loopback/build": "^11.0.11",
@@ -70,6 +69,7 @@
     "@vitest/coverage-c8": "^0.33.0",
     "eslint": "^8.57.1",
     "nodemon": "^3.0.1",
+    "prettier": "^2.8.8",
     "sinon": "^15.2.0",
     "source-map-support": "^0.5.21",
     "typescript": "~5.2.2",

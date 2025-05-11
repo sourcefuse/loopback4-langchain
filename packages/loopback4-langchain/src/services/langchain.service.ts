@@ -4,6 +4,7 @@ import {ChatAnthropic} from '@langchain/anthropic';
 import {Tool} from 'langchain/tools';
 import {BaseOutputParser} from '@langchain/core/output_parsers';
 import {BaseChatModel} from '@langchain/core/language_models/chat_models';
+import {SystemMessage, HumanMessage} from '@langchain/core/messages';
 
 /**
  * LLM Provider types
@@ -18,18 +19,22 @@ export interface LangChainOptions {
   model?: string;
   temperature?: number;
   provider?: LLMProvider;
+  systemPrompt?: string;
 }
 
 @injectable({scope: BindingScope.SINGLETON})
 export class LangChainService {
   private chatModel: BaseChatModel;
   private outputParsers: BaseOutputParser[] = [];
+  private systemPrompt: string | undefined;
 
   constructor(
     options: LangChainOptions = {},
     tools: Tool[] = [],
     outputParsers: BaseOutputParser[] = [],
   ) {
+    // Store system prompt if provided
+    this.systemPrompt = options.systemPrompt;
     const provider = options.provider ?? 'groq';
     const temperature = options.temperature ?? 0.7;
 
@@ -116,7 +121,23 @@ export class LangChainService {
    * @param prompt Text prompt
    */
   async generateText(prompt: string): Promise<string> {
-    const response = await this.chatModel.invoke(prompt);
+    // Create messages array
+    const messages = [];
+
+    // Add system message if available
+    if (this.systemPrompt) {
+      messages.push(new SystemMessage(this.systemPrompt));
+    }
+
+    // Add user message
+    messages.push(new HumanMessage(prompt));
+
+    // Invoke the chat model with messages
+    const response =
+      messages.length > 1
+        ? await this.chatModel.invoke(messages)
+        : await this.chatModel.invoke(prompt);
+
     return response.content.toString();
   }
 

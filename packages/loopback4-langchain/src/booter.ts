@@ -1,5 +1,5 @@
 import {BaseArtifactBooter, booter} from '@loopback/boot';
-import {Application, config, inject} from '@loopback/core';
+import {Application, config, inject, CoreBindings} from '@loopback/core';
 import {BootBindings} from '@loopback/boot';
 import path from 'path';
 import * as fs from 'fs';
@@ -68,7 +68,7 @@ export class LangChainBooter extends BaseArtifactBooter {
   };
 
   constructor(
-    @inject('application') app: Application,
+    @inject('application.instance') app: Application,
     @inject(BootBindings.PROJECT_ROOT) projectRoot: string,
     @config()
     public artifactOptions: typeof LangChainBooterDefaults = LangChainBooterDefaults,
