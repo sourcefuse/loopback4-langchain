@@ -1,6 +1,7 @@
 import {BindingScope, injectable} from '@loopback/core'
 import {ChatGroq} from '@langchain/groq'
 import {ChatAnthropic} from '@langchain/anthropic'
+import {ChatOpenAI} from '@langchain/openai'
 import {Tool} from 'langchain/tools'
 import {BaseOutputParser} from '@langchain/core/output_parsers'
 import {BaseChatModel} from '@langchain/core/language_models/chat_models'
@@ -9,7 +10,7 @@ import {SystemMessage, HumanMessage} from '@langchain/core/messages'
 /**
  * LLM Provider types
  */
-export type LLMProvider = 'groq' | 'anthropic'
+export type LLMProvider = 'groq' | 'anthropic' | 'openai'
 
 /**
  * LangChain service options
@@ -20,6 +21,7 @@ export interface LangChainOptions {
   temperature?: number
   provider?: LLMProvider
   systemPrompt?: string
+  baseUrl?: string
 }
 
 @injectable({scope: BindingScope.SINGLETON})
@@ -56,6 +58,29 @@ export class LangChainService {
         modelName,
         temperature,
       })
+    } else if (provider === 'openai') {
+      const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY
+      if (!apiKey) {
+        throw new Error(
+          'OpenAI API key is required. Please provide it via options or set the OPENAI_API_KEY environment variable.',
+        )
+      }
+      // Default to GPT-3.5 Turbo model
+      const modelName = options.model ?? 'gpt-3.5-turbo'
+
+      // Initialize OpenAI chat model with optional baseUrl for local LLMs
+      const openAIConfig: any = {
+        apiKey,
+        modelName,
+        temperature,
+      }
+
+      // Add baseUrl if provided (for local LLMs)
+      if (options.baseUrl) {
+        openAIConfig.baseUrl = options.baseUrl
+      }
+
+      this.chatModel = new ChatOpenAI(openAIConfig)
     } else {
       // Default to Groq
       const apiKey = options.apiKey ?? process.env.GROQ_API_KEY

@@ -14,15 +14,29 @@ This is a demo LoopBack application that provides a chat API for a support bot. 
    npm install
    ```
 
-2. Set environment variables (optional):
+2. Set up environment variables:
+
+   Copy the example environment file to create your own:
    ```bash
+   cp .env.example .env
+   ```
+
+   Edit the `.env` file to configure your settings:
+   ```
    # LLM configuration
-   export GROQ_API_KEY=your_groq_api_key
+   GROQ_API_KEY=your_groq_api_key
 
    # Redis configuration (optional, defaults to localhost:6379)
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+   REDIS_PASSWORD=your_redis_password
+   ```
+
+   Alternatively, you can set these variables directly in your environment:
+   ```bash
+   export GROQ_API_KEY=your_groq_api_key
    export REDIS_HOST=localhost
-   export REDIS_PORT=6379
-   export REDIS_PASSWORD=your_redis_password
+   # etc.
    ```
 
 ## Running the application

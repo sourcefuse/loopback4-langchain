@@ -54,13 +54,57 @@ export class MyController {
 You can configure the LangChain component by binding configuration to the `LangChainBindings.CONFIG` binding key:
 
 ```typescript
-import {LangChainBindings, LangChainConfig} from 'loopback4-langchain';
+import {LangChainBindings, LangChainOptions} from 'loopback4-langchain';
 
 // In your application class:
-const config: LangChainConfig = {
-  // Your configuration here
+const langchainOptions: LangChainOptions = {
+  // Choose a provider: 'groq', 'anthropic', or 'openai'
+  provider: 'groq',
+
+  // API key for the selected provider
+  apiKey: process.env.GROQ_API_KEY,
+
+  // Model name depends on the provider
+  model: 'llama3-8b-8192',
+
+  // Temperature for generation (0.0 to 1.0)
+  temperature: 0.7,
+
+  // Optional: System prompt for the chat model
+  systemPrompt: 'You are a helpful assistant.',
+
+  // Optional: Base URL for local LLM deployments (OpenAI-compatible APIs)
+  // baseUrl: 'http://localhost:8080/v1',
 };
-this.bind(LangChainBindings.CONFIG).to(config);
+this.bind('services.langchain.options').to(langchainOptions);
+this.component(LangChainComponent);
+```
+
+#### Example Configurations
+
+**Using OpenAI:**
+
+```typescript
+const langchainOptions: LangChainOptions = {
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY,
+  model: 'gpt-4',
+  temperature: 0.7,
+  systemPrompt: 'You are a helpful assistant.',
+};
+```
+
+**Using a Local LLM with OpenAI-compatible API:**
+
+```typescript
+const langchainOptions: LangChainOptions = {
+  provider: 'openai',
+  apiKey: 'not-needed-for-local-deployment', // Some local deployments don't require an API key
+  model: 'local-model',
+  baseUrl: 'http://localhost:8080/v1', // URL to your local LLM server
+  temperature: 0.7,
+  systemPrompt: 'You are a helpful assistant.',
+};
 ```
 
 ## CLI Commands
@@ -197,7 +241,7 @@ npx lb4lc
 
   Methods:
 
-  - `getChatModel()`: Get the LangChain Groq chat model instance
+  - `getChatModel()`: Get the LangChain chat model instance (supports Groq, Anthropic, or OpenAI)
   - `generateText(prompt: string)`: Generate text using the chat model
   - `getOutputParsers()`: Get all registered output parsers
   - `getOutputParserByName(name: string)`: Get an output parser by name
