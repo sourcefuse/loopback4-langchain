@@ -7,6 +7,20 @@
   "bin": {
     "lb4lc": "./dist/cli/index.js"
   },
+  "oclif": {
+    "bin": "lb4lc",
+    "dirname": "lb4lc",
+    "commands": "./dist/cli/commands",
+    "topicSeparator": " ",
+    "topics": {
+      "tool": { "description": "Generate a new LangChain tool" },
+      "prompt": { "description": "Generate a new prompt template" },
+      "system": { "description": "Generate a new system instruction file" },
+      "retriever": { "description": "Generate a new retriever" },
+      "runnable": { "description": "Generate a new runnable JSON stub" },
+      "chain": { "description": "Generate a new chain" }
+    }
+  },
   "scripts": {
     "build": "npm run clean && lb-tsc",
     "build:watch": "npm run clean && lb-tsc --watch",
