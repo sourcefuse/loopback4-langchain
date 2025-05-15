@@ -29,7 +29,10 @@ export default class PromptCommand extends Command {
     await this.generatePrompt(args.name, flags.system)
   }
 
-  private async generatePrompt(name: string, systemPrompt?: string): Promise<void> {
+  private async generatePrompt(
+    name: string,
+    systemPrompt?: string,
+  ): Promise<void> {
     // Ensure the prompts directory exists
     const promptsDir = path.join(process.cwd(), 'prompts')
     if (!fs.existsSync(promptsDir)) {
@@ -56,7 +59,7 @@ export default class PromptCommand extends Command {
   private getPromptTemplate(name: string, systemPrompt?: string): string {
     const className = `${name.charAt(0).toUpperCase() + name.slice(1)}Prompt`
     const defaultSystemPrompt = systemPrompt || 'You are a helpful assistant.'
-    
+
     return `import { ChatPromptTemplate } from '@langchain/core/prompts';
 
 /**

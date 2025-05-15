@@ -53,8 +53,10 @@ export default class SystemCommand extends Command {
   }
 
   private getSystemTemplate(name: string, text: string): string {
-    const constName = `${name.charAt(0).toUpperCase() + name.slice(1)}SystemInstruction`
-    
+    const constName = `${
+      name.charAt(0).toUpperCase() + name.slice(1)
+    }SystemInstruction`
+
     return `/**
  * ${constName} - A system instruction for ${name}
  */

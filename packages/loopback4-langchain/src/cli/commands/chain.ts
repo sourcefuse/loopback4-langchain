@@ -29,7 +29,10 @@ export default class ChainCommand extends Command {
     await this.generateChain(args.name, flags.from)
   }
 
-  private async generateChain(name: string, runnableName?: string): Promise<void> {
+  private async generateChain(
+    name: string,
+    runnableName?: string,
+  ): Promise<void> {
     // Ensure the chains directory exists
     const chainsDir = path.join(process.cwd(), 'chains')
     if (!fs.existsSync(chainsDir)) {
@@ -55,16 +58,20 @@ export default class ChainCommand extends Command {
 
   private getChainTemplate(name: string, runnableName?: string): string {
     const className = `${name.charAt(0).toUpperCase() + name.slice(1)}Chain`
-    const runnableImport = runnableName 
-      ? `import { ${runnableName.charAt(0).toUpperCase() + runnableName.slice(1)}Runnable } from '../runnables/${runnableName}.runnable';`
-      : '';
+    const runnableImport = runnableName
+      ? `import { ${
+          runnableName.charAt(0).toUpperCase() + runnableName.slice(1)
+        }Runnable } from '../runnables/${runnableName}.runnable';`
+      : ''
     const runnableConfig = runnableName
       ? `\n  /**
    * The runnable configuration for this chain
    */
-  static runnableConfig = ${runnableName.charAt(0).toUpperCase() + runnableName.slice(1)}Runnable;`
-      : '';
-    
+  static runnableConfig = ${
+    runnableName.charAt(0).toUpperCase() + runnableName.slice(1)
+  }Runnable;`
+      : ''
+
     return `import { BaseChain, ChainInputs } from 'langchain/chains';
 import { ChatGroq } from '@langchain/groq';
 import { ChainValues } from 'langchain/schema';

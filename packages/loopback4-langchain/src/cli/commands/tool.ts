@@ -5,9 +5,7 @@ import * as path from 'path'
 export default class ToolCommand extends Command {
   static description = 'Generate a new LangChain tool'
 
-  static examples = [
-    '$ lb4lc tool my-tool',
-  ]
+  static examples = ['$ lb4lc tool my-tool']
 
   static args = {
     name: Args.string({
@@ -47,7 +45,7 @@ export default class ToolCommand extends Command {
 
   private getToolTemplate(name: string): string {
     const className = `${name.charAt(0).toUpperCase() + name.slice(1)}Tool`
-    
+
     return `import { DynamicTool } from '@langchain/core/tools';
 
 /**

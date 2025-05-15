@@ -30,7 +30,10 @@ export default class RetrieverCommand extends Command {
     await this.generateRetriever(args.name, flags.datasource)
   }
 
-  private async generateRetriever(name: string, datasource?: string): Promise<void> {
+  private async generateRetriever(
+    name: string,
+    datasource?: string,
+  ): Promise<void> {
     // Ensure the retrievers directory exists
     const retrieversDir = path.join(process.cwd(), 'retrievers')
     if (!fs.existsSync(retrieversDir)) {
@@ -42,7 +45,9 @@ export default class RetrieverCommand extends Command {
 
     // Check if file already exists
     if (fs.existsSync(filePath)) {
-      this.error(`Retriever file ${fileName} already exists in ${retrieversDir}`)
+      this.error(
+        `Retriever file ${fileName} already exists in ${retrieversDir}`,
+      )
       return
     }
 
@@ -57,7 +62,7 @@ export default class RetrieverCommand extends Command {
   private getRetrieverTemplate(name: string, datasource?: string): string {
     const className = `${name.charAt(0).toUpperCase() + name.slice(1)}Retriever`
     const dsName = datasource || 'DefaultDataSource'
-    
+
     return `import { inject } from '@loopback/core';
 import { Document } from '@langchain/core/documents';
 import { BaseVectorRetriever } from 'loopback4-langchain';

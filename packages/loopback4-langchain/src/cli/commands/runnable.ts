@@ -61,9 +61,9 @@ export default class RunnableCommand extends Command {
 
   private getRunnableTemplate(name: string, type: string): string {
     const constName = `${name.charAt(0).toUpperCase() + name.slice(1)}Runnable`
-    
+
     let template = ''
-    
+
     switch (type) {
       case 'llm':
         template = `import { RunnableConfig } from '@langchain/core/runnables';
@@ -147,7 +147,7 @@ export const ${constName}: RunnableConfig = {
 `
         break
     }
-    
+
     return template
   }
 }
