@@ -1,4 +1,10 @@
-import {Provider, inject, service} from '@loopback/core'
+import {
+  BindingScope,
+  Provider,
+  inject,
+  injectable,
+  service,
+} from '@loopback/core'
 import {LangChainService, LangChainOptions} from '../services/langchain.service'
 import {LANGCHAIN_OPTIONS} from '../keys'
 import {
@@ -10,9 +16,8 @@ import {
   OutputParserExtensionPointImpl,
 } from '../extension-points/langchain-output-parsers.extension-point'
 
+@injectable({scope: BindingScope.SINGLETON})
 export class LangChainServiceProvider implements Provider<LangChainService> {
-  private static instance: LangChainService
-
   constructor(
     @service(ToolExtensionPointImpl)
     private readonly toolEP: ToolExtensionPoint,
@@ -23,15 +28,8 @@ export class LangChainServiceProvider implements Provider<LangChainService> {
   ) {}
 
   value(): LangChainService {
-    if (!LangChainServiceProvider.instance) {
-      const llmTools = this.toolEP.getTools()
-      const outputParsers = this.outputParserEP.getOutputParsers()
-      LangChainServiceProvider.instance = new LangChainService(
-        this.options,
-        llmTools,
-        outputParsers,
-      )
-    }
-    return LangChainServiceProvider.instance
+    const llmTools = this.toolEP.getTools()
+    const outputParsers = this.outputParserEP.getOutputParsers()
+    return new LangChainService(this.options, llmTools, outputParsers)
   }
 }

@@ -5,7 +5,7 @@ import path from 'path'
 import fs from 'fs'
 import {z} from 'zod'
 import {describe, it, beforeEach, afterEach} from 'vitest'
-import {Tool} from '../types/tools.types'
+import {ToolImpl} from '../types/tools.types'
 import {LangChainBooter} from '../booter'
 import {FaqRetriever} from '../retrievers/faq-retriever'
 import {RUNNABLE_LOADER} from '../keys'
@@ -19,7 +19,7 @@ describe('LangChainBooter', () => {
   const retrieversDir = path.join(fixturesDir, 'retrievers')
   const runnablesDir = fixturesDir // Runnables are discovered from the root directory
 
-  beforeEach(async () => {
+  beforeEach(() => {
     // Create fixtures directory if it doesn't exist
     if (!fs.existsSync(fixturesDir)) {
       fs.mkdirSync(fixturesDir)
@@ -127,7 +127,7 @@ config:
 
     // Create a mock instance of RunnableLoader
     class MockRunnableLoader extends RunnableLoader {
-      async load(options: any) {
+      load(options: any) {
         // Return the spec as is for testing
         return options.spec
       }

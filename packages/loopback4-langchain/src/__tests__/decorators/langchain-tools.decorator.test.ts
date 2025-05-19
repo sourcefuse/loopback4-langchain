@@ -1,28 +1,23 @@
 import {expect} from '@loopback/testlab'
-import {
-  Application,
-  BindingScope,
-  Component,
-  createBindingFromClass,
-} from '@loopback/core'
+import {Application, createBindingFromClass} from '@loopback/core'
 import {z} from 'zod'
 import {describe, it, beforeEach} from 'vitest'
 import {langchainTools} from '../../decorators/langchain-tools.decorator'
-import {Tool} from '../../types/tools.types'
+import {ToolImpl} from '../../types/tools.types'
 import {ToolExtensionPointImpl} from '../../extension-points/langchain-tools.extension-point'
 import {LangChainComponent} from '../../components/langchain.component'
 
 describe('langchainTools decorator', () => {
   let app: Application
 
-  beforeEach(async () => {
+  beforeEach(() => {
     app = new Application()
     app.component(LangChainComponent)
   })
 
   it('registers a class as a LangChain tool', async () => {
     @langchainTools()
-    class TestTool implements Tool {
+    class TestTool implements ToolImpl {
       name = 'test-tool'
 
       description = 'A test tool'
@@ -33,8 +28,8 @@ describe('langchainTools decorator', () => {
         })
         .transform(input => input.input || '')
 
-      async run(args: {input: string}): Promise<string> {
-        return `Processed: ${args.input}`
+      async run(args: {input: string}) {
+        return Promise.resolve(`Processed: ${args.input}`)
       }
     }
 

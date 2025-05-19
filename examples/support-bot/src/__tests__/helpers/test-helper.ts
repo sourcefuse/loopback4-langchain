@@ -1,5 +1,3 @@
-import {LangChainService} from 'loopback4-langchain'
-import {RedisChatMessageHistory} from '@langchain/redis'
 import {HumanMessage, AIMessage} from '@langchain/core/messages'
 import sinon from 'sinon'
 import {SupportBotApplication} from '../../application'
@@ -85,7 +83,7 @@ class MockClient implements CustomClient {
   }
 }
 
-export async function setupApplication(): Promise<AppWithClient> {
+export function setupApplication() {
   const app = new SupportBotApplication({
     rest: {
       port: 0,

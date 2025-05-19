@@ -28,6 +28,8 @@ export interface LangChainOptions {
 export class LangChainService {
   private chatModel: BaseChatModel
 
+  private tools: Tool[] = []
+
   private outputParsers: BaseOutputParser[] = []
 
   private systemPrompt: string | undefined
@@ -110,7 +112,7 @@ export class LangChainService {
       const toolsByName = Object.fromEntries(
         tools.map(tool => [tool.name, tool]),
       )
-      console.log(toolsByName)
+      this.tools = tools
     }
 
     // Store output parsers
@@ -118,7 +120,6 @@ export class LangChainService {
     const outputParsersByName = Object.fromEntries(
       outputParsers.map(parser => [parser.name, parser]),
     )
-    console.log(outputParsersByName)
   }
 
   /**
@@ -126,6 +127,25 @@ export class LangChainService {
    */
   getChatModel(): BaseChatModel {
     return this.chatModel
+  }
+
+  /**
+   * Get all registered tools
+   */
+  getTools(): Tool[] {
+    return this.tools
+  }
+
+  /**
+   * Get a tool by name
+   * @param name Name of the tool
+   */
+  getToolByName(name: string): Tool {
+    const found = this.tools.find(tool => tool.name === name)
+    if (!found) {
+      throw new Error(`Tool "${name}" not found`)
+    }
+    return found
   }
 
   /**
@@ -139,8 +159,12 @@ export class LangChainService {
    * Get an output parser by name
    * @param name Name of the output parser
    */
-  getOutputParserByName(name: string): BaseOutputParser | undefined {
-    return this.outputParsers.find(parser => parser.name === name)
+  getOutputParserByName<T>(name: string): BaseOutputParser<T> {
+    const found = this.outputParsers.find(parser => parser.name === name)
+    if (!found) {
+      throw new Error(`Output parser "${name}" not found`)
+    }
+    return found as BaseOutputParser<T>
   }
 
   /**

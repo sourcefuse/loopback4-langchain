@@ -1,7 +1,5 @@
-import {Component, ProviderMap, inject} from '@loopback/core'
-import {LangChainOptions, LangChainService} from '../services/langchain.service'
+import {Component, ProviderMap} from '@loopback/core'
 import {
-  LANGCHAIN_OPTIONS,
   LANGCHAIN_SERVICE,
   REDIS_CHAT_MESSAGE_HISTORY,
   RUNNABLE_LOADER,
@@ -18,17 +16,13 @@ export class LangChainComponent implements Component {
   providers?: ProviderMap
 
   services = [
-    LangChainService,
     ToolExtensionPointImpl,
     OutputParserExtensionPointImpl,
     LangChainBooter,
     LangChainLifeCycleObserver,
   ]
 
-  constructor(
-    @inject(LANGCHAIN_OPTIONS, {optional: true})
-    private options: LangChainOptions = {},
-  ) {
+  constructor() {
     this.providers = {
       [LANGCHAIN_SERVICE.key]: LangChainServiceProvider,
       [REDIS_CHAT_MESSAGE_HISTORY.key]: RedisChatMessageHistoryProvider,

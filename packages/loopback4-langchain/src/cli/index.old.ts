@@ -1,12 +1,14 @@
 #!/usr/bin/env node
-
+/* eslint-disable */
 import {Command, Flags, Args} from '@oclif/core'
 import * as fs from 'fs'
 import * as path from 'path'
 
 class LB4LCCommand extends Command {
   static id = 'lb4lc'
+
   static description = 'LoopBack 4 LangChain CLI'
+
   static usage = 'lb4lc [COMMAND]'
 
   static flags = {

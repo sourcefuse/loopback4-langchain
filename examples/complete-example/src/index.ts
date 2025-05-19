@@ -1,28 +1,27 @@
-import * as dotenv from 'dotenv'
-import {ApplicationConfig, SupportBotApplication} from './application'
+import {
+  ApplicationConfig,
+  ToolsAndOutputParsersApplication,
+} from './application';
 
-// Load environment variables from .env file
-dotenv.config()
-
-export * from './application'
+export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new SupportBotApplication(options)
-  await app.boot()
-  await app.start()
+  const app = new ToolsAndOutputParsersApplication(options);
+  await app.boot();
+  await app.start();
 
-  const {url} = app.restServer
-  console.log(`Server is running at ${url}`)
-  console.log(`Try ${url}/chat`)
+  const url = app.restServer.url;
+  console.log(`Server is running at ${url}`);
+  console.log(`Try ${url}/ping`);
 
-  return app
+  return app;
 }
 
 if (require.main === module) {
   // Run the application
   const config = {
     rest: {
-      port: +(process.env.PORT ?? 3000),
+      port: +(process.env.PORT ?? 3002),
       host: process.env.HOST ?? '127.0.0.1',
       // The `gracePeriodForClose` provides a graceful close for http/https
       // servers with keep-alive clients. The default value is `Infinity`
@@ -35,9 +34,9 @@ if (require.main === module) {
         setServersFromRequest: true,
       },
     },
-  }
+  };
   main(config).catch(err => {
-    console.error('Cannot start the application.', err)
-    process.exit(1)
-  })
+    console.error('Cannot start the application.', err);
+    process.exit(1);
+  });
 }
