@@ -19,7 +19,7 @@ export default class ToolCommand extends Command {
     await this.generateTool(args.name)
   }
 
-  private async generateTool(name: string): Promise<void> {
+  private generateTool(name: string): void {
     // Ensure the tools directory exists
     const toolsDir = path.join(process.cwd(), 'tools')
     if (!fs.existsSync(toolsDir)) {

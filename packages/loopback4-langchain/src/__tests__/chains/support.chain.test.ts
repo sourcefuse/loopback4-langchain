@@ -57,7 +57,7 @@ describe('SupportChain', () => {
     const result = await supportChain.call({query})
 
     // Verify that the chat model was invoked
-    expect(mockChatModel.invoke).toHaveBeenCalled()
+    expect(mockChatModel.invoke.bind(mockChatModel)).toHaveBeenCalled()
 
     // Verify the result structure
     expect(result).toHaveProperty('result')

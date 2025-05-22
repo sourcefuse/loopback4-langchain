@@ -1,49 +1,12 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest'
 import {Document} from '@langchain/core/documents'
-import {DefaultCrudRepository, Entity} from '@loopback/repository'
-import {BaseVectorRetriever} from '../../retrievers/base-vector-retriever'
-
-// Mock entity type for testing
-class MockEntity implements Entity {
-  id!: string
-
-  content!: string
-
-  embedding!: number[]
-
-  metadata?: Record<string, any>
-
-  constructor(data: Partial<MockEntity>) {
-    Object.assign(this, data)
-  }
-
-  // Implement Entity interface methods
-  getId() {
-    return this.id
-  }
-
-  getIdObject() {
-    return {id: this.id}
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      content: this.content,
-      embedding: this.embedding,
-      metadata: this.metadata,
-    }
-  }
-
-  toObject() {
-    return this.toJSON()
-  }
-}
+import {DefaultCrudRepository} from '@loopback/repository'
+import {MockEntity} from './mock-entity'
 
 // Concrete implementation for testing
 class TestVectorRetriever {
   constructor(
-    private repository: DefaultCrudRepository<MockEntity, string, {}>,
+    private repository: DefaultCrudRepository<MockEntity, string, object>,
   ) {}
 
   // Implementation of retriever methods
@@ -71,7 +34,7 @@ class TestVectorRetriever {
 }
 
 describe('BaseVectorRetriever', () => {
-  let mockRepository: DefaultCrudRepository<MockEntity, string, {}>
+  let mockRepository: DefaultCrudRepository<MockEntity, string, object>
   let retriever: TestVectorRetriever
 
   // Mock data
@@ -94,7 +57,7 @@ describe('BaseVectorRetriever', () => {
     // Create a mock repository
     mockRepository = {
       find: vi.fn().mockResolvedValue(mockEntities),
-    } as unknown as DefaultCrudRepository<MockEntity, string, {}>
+    } as unknown as DefaultCrudRepository<MockEntity, string, object>
 
     // Create the retriever with the mock repository
     retriever = new TestVectorRetriever(mockRepository)
@@ -118,7 +81,7 @@ describe('BaseVectorRetriever', () => {
     const documents = await retriever.getRelevantDocuments(query)
 
     // Verify that find was called on the repository
-    expect(mockRepository.find).toHaveBeenCalled()
+    expect(mockRepository.find.bind(mockRepository)).toHaveBeenCalled()
 
     // Verify that the correct number of documents was returned
     expect(documents).toHaveLength(mockEntities.length)

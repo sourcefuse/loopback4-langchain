@@ -1,4 +1,4 @@
-import {inject, Context, BindingScope, Provider} from '@loopback/core'
+import {inject, Context} from '@loopback/core'
 import * as fs from 'fs'
 import * as path from 'path'
 import Ajv from 'ajv'
@@ -144,7 +144,9 @@ export class RunnableLoader {
           } catch (error) {
             // If no binding is found, continue with the spec as is
             console.warn(
-              `No binding found for chat model: ${spec.config.model}`,
+              `No binding found for chat model: ${JSON.stringify(
+                spec.config.model,
+              )}`,
             )
           }
         }
@@ -154,15 +156,22 @@ export class RunnableLoader {
         // Resolve tool bindings
         try {
           const toolBindings = await context.findByTag({artifactType: 'tools'})
-          for (const binding of toolBindings) {
-            const tool = await context.get<Tool>(binding.key)
-            if (tool.name === spec.name) {
-              resolvedSpec.instance = tool
-              break
-            }
+
+          const match = await toolBindings.reduce<Promise<Tool | undefined>>(
+            async (prevPromise, binding) => {
+              const found = await prevPromise
+              if (found) return found
+
+              const tool = await context.get<Tool>(binding.key)
+              return tool.name === spec.name ? tool : undefined
+            },
+            Promise.resolve(undefined),
+          )
+
+          if (match) {
+            resolvedSpec.instance = match
           }
         } catch (error) {
-          // If no binding is found, continue with the spec as is
           console.warn(`No binding found for tool: ${spec.name}`)
         }
         break
@@ -173,17 +182,26 @@ export class RunnableLoader {
           const retrieverBindings = await context.findByTag({
             artifactType: 'retrievers',
           })
-          for (const binding of retrieverBindings) {
+
+          const match = await retrieverBindings.reduce<
+            Promise<BaseRetriever | undefined>
+          >(async (prevPromise, binding) => {
+            const found = await prevPromise
+            if (found) return found
+
             const retriever = await context.get<BaseRetriever>(binding.key)
-            if (retriever.constructor.name === spec.name) {
-              resolvedSpec.instance = retriever
-              break
-            }
+            return retriever.constructor.name === spec.name
+              ? retriever
+              : undefined
+          }, Promise.resolve(undefined))
+
+          if (match) {
+            resolvedSpec.instance = match
           }
         } catch (error) {
-          // If no binding is found, continue with the spec as is
           console.warn(`No binding found for retriever: ${spec.name}`)
         }
+
         break
 
       case 'output_parser':
@@ -192,36 +210,50 @@ export class RunnableLoader {
           const parserBindings = await context.findByTag({
             artifactType: 'output_parsers',
           })
-          for (const binding of parserBindings) {
+
+          const match = await parserBindings.reduce<
+            Promise<BaseOutputParser | undefined>
+          >(async (prevPromise, binding) => {
+            const found = await prevPromise
+            if (found) return found
+
             const parser = await context.get<BaseOutputParser>(binding.key)
-            if (parser.name === spec.name) {
-              resolvedSpec.instance = parser
-              break
-            }
+            return parser.name === spec.name ? parser : undefined
+          }, Promise.resolve(undefined))
+
+          if (match) {
+            resolvedSpec.instance = match
           }
         } catch (error) {
-          // If no binding is found, continue with the spec as is
           console.warn(`No binding found for output parser: ${spec.name}`)
         }
+
         break
 
       case 'chain':
         // Resolve chain bindings
         try {
-          const chainBindings = await context.findByTag({
-            artifactType: 'chains',
+          const parserBindings = await context.findByTag({
+            artifactType: 'output_parsers',
           })
-          for (const binding of chainBindings) {
-            const chain = await context.get(binding.key)
-            if ((chain as any).constructor.name === spec.name) {
-              resolvedSpec.instance = chain
-              break
-            }
+
+          const match = await parserBindings.reduce<
+            Promise<BaseOutputParser | undefined>
+          >(async (prevPromise, binding) => {
+            const found = await prevPromise
+            if (found) return found
+
+            const parser = await context.get<BaseOutputParser>(binding.key)
+            return parser.name === spec.name ? parser : undefined
+          }, Promise.resolve(undefined))
+
+          if (match) {
+            resolvedSpec.instance = match
           }
         } catch (error) {
-          // If no binding is found, continue with the spec as is
-          console.warn(`No binding found for chain: ${spec.name}`)
+          console.warn(`No binding found for output parser: ${spec.name}`)
         }
+
         break
 
       case 'prompt':
@@ -230,17 +262,27 @@ export class RunnableLoader {
           const promptBindings = await context.findByTag({
             artifactType: 'prompts',
           })
-          for (const binding of promptBindings) {
-            const prompt = await context.get(binding.key)
-            if ((prompt as any).constructor.name === spec.name) {
-              resolvedSpec.instance = prompt
-              break
-            }
+
+          const match = await promptBindings.reduce<Promise<any>>(
+            async (prevPromise, binding) => {
+              const found = await prevPromise
+              if (found) return found
+
+              const prompt = await context.get(binding.key)
+              return (prompt as any).constructor.name === spec.name
+                ? prompt
+                : undefined
+            },
+            Promise.resolve(undefined),
+          )
+
+          if (match) {
+            resolvedSpec.instance = match
           }
         } catch (error) {
-          // If no binding is found, continue with the spec as is
           console.warn(`No binding found for prompt: ${spec.name}`)
         }
+
         break
 
       default:
@@ -249,16 +291,5 @@ export class RunnableLoader {
     }
 
     return resolvedSpec
-  }
-}
-
-/**
- * Provider for RunnableLoader
- */
-export class RunnableLoaderProvider implements Provider<RunnableLoader> {
-  constructor(@inject.context() private context: Context) {}
-
-  value(): RunnableLoader {
-    return new RunnableLoader(this.context)
   }
 }

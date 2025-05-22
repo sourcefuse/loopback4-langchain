@@ -1,10 +1,13 @@
 import {BaseArtifactBooter, booter, BootBindings} from '@loopback/boot'
-import {Application, config, inject, CoreBindings} from '@loopback/core'
-import path from 'path'
+import {Application, config, inject} from '@loopback/core'
+import {
+  discoverFiles,
+  loadClassesFromFiles,
+} from '@loopback/boot/dist/booters/booter-utils'
 import * as fs from 'fs'
 import * as yaml from 'yaml'
 import {RUNNABLE_LOADER} from './keys'
-import {RunnableLoader, Runnable} from './runtime/runnable-loader'
+import {Runnable} from './runtime/runnable-loader'
 
 /**
  * Default options for LangChainBooter
@@ -180,43 +183,46 @@ export class LangChainBooter extends BaseArtifactBooter {
     // Get the RunnableLoader from the application
     const runnableLoader = await this.app.get(RUNNABLE_LOADER)
 
-    for (const file of files) {
-      try {
-        // Read the file content
-        const content = fs.readFileSync(file, 'utf-8')
+    const supportedFiles = files.filter(
+      file =>
+        file.endsWith('.runnable.json') || file.endsWith('.runnable.yaml'),
+    )
 
-        // Parse the content based on file extension
-        let spec: Runnable
-        if (file.endsWith('.runnable.json')) {
-          spec = JSON.parse(content)
-        } else if (file.endsWith('.runnable.yaml')) {
-          spec = yaml.parse(content)
-        } else {
-          // Skip files with unsupported extensions
-          continue
+    await Promise.all(
+      supportedFiles.map(async file => {
+        try {
+          // Read the file content
+          const content = fs.readFileSync(file, 'utf-8')
+
+          // Parse the content based on file extension
+          let spec: Runnable
+          if (file.endsWith('.runnable.json')) {
+            spec = JSON.parse(content)
+          } else {
+            spec = yaml.parse(content)
+          }
+
+          // Load the runnable using the RunnableLoader
+          const runnable = await runnableLoader.load({spec})
+
+          // Bind the runnable to the application
+          const binding = this.app
+            .bind(`langchain.runnable.${runnable.id}`)
+            .to(runnable)
+
+          // Add metadata to the binding
+          binding.tag({
+            artifactType: 'runnable',
+            name: runnable.name,
+            type: runnable.type,
+          })
+
+          console.log(`Bound runnable ${runnable.id} from ${file}`)
+        } catch (error) {
+          console.error(`Error loading runnable from ${file}:`, error)
         }
-
-        // Load the runnable using the RunnableLoader
-        const runnable = await runnableLoader.load({spec})
-
-        // Bind the runnable to the application
-        const binding = this.app
-          .bind(`langchain.runnable.${runnable.id}`)
-          .to(runnable)
-
-        // Add metadata to the binding
-        binding.tag({
-          artifactType: 'runnable',
-          name: runnable.name,
-          type: runnable.type,
-        })
-
-        console.log(`Bound runnable ${runnable.id} from ${file}`)
-      } catch (error) {
-        // Log the error but continue with other files
-        console.error(`Error loading runnable from ${file}:`, error)
-      }
-    }
+      }),
+    )
   }
 
   /**
@@ -242,18 +248,14 @@ export class LangChainBooter extends BaseArtifactBooter {
   /**
    * Discover files using the given glob pattern
    */
-  private async discoverWithGlob(glob: string): Promise<string[]> {
-    const {discoverFiles} = require('@loopback/boot/dist/booters/booter-utils')
+  private discoverWithGlob(glob: string): Promise<string[]> {
     return discoverFiles(glob, this.projectRoot)
   }
 
   /**
    * Load classes from the given files
    */
-  private async loadClassesFromFiles(files: string[]): Promise<object[]> {
-    const {
-      loadClassesFromFiles,
-    } = require('@loopback/boot/dist/booters/booter-utils')
+  private loadClassesFromFiles(files: string[]): object[] {
     return loadClassesFromFiles(files, this.projectRoot)
   }
 

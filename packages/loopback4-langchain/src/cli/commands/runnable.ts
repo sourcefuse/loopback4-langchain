@@ -35,7 +35,7 @@ export default class RunnableCommand extends Command {
     await this.generateRunnable(args.name, flags.type)
   }
 
-  private async generateRunnable(name: string, type: string): Promise<void> {
+  private generateRunnable(name: string, type: string): void {
     // Ensure the runnables directory exists
     const runnablesDir = path.join(process.cwd(), 'runnables')
     if (!fs.existsSync(runnablesDir)) {

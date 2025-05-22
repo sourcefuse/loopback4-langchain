@@ -10,7 +10,7 @@ import {ToolExtensionPointImpl} from '../extension-points/langchain-tools.extens
 import {OutputParserExtensionPointImpl} from '../extension-points/langchain-output-parsers.extension-point'
 import {LangChainBooter} from '../booter'
 import {LangChainLifeCycleObserver} from '../observers/langchain.observer'
-import {RunnableLoaderProvider} from '../runtime/runnable-loader'
+import { RunnableLoaderProvider } from '../runtime/runnable-loader-provider'
 
 export class LangChainComponent implements Component {
   providers?: ProviderMap

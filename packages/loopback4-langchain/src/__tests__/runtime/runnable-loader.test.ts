@@ -97,7 +97,7 @@ describe('RunnableLoader', () => {
     expect(result.name).toBe('Test LLM')
   })
 
-  it('should load a Runnable from a spec file', async () => {
+  it('should load a Runnable from a spec file', () => {
     // Skip this test for now as it requires more complex mocking
     // The test is verifying that a Runnable can be loaded from a file,
     // which is already covered by other tests in the booter.spec.ts file
@@ -391,11 +391,11 @@ describe('RunnableLoader', () => {
 
     // Load each spec and build a map
     const runnableMap = new Map<string, any>()
-
-    for (const spec of specs) {
+    await specs.reduce(async (prevPromise, spec) => {
+      await prevPromise
       const result = await loader.load({spec})
       runnableMap.set(result.id, result.instance)
-    }
+    }, Promise.resolve())
 
     expect(runnableMap.size).toBe(3)
     expect(runnableMap.get('llm1')).toBeDefined()

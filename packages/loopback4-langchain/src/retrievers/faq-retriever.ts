@@ -32,7 +32,7 @@ export class FaqRetriever {
    * @param query - The query string to search for
    * @returns A promise that resolves to an array of Document objects
    */
-  async getRelevantDocuments(query: string): Promise<Document[]> {
+  getRelevantDocuments(query: string): Document[] {
     // Simple implementation: return FAQs where the question contains the query string
     const normalizedQuery = query.toLowerCase()
     const relevantFaqs = this.faqs.filter(faq =>

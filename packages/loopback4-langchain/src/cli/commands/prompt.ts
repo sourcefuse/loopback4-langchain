@@ -29,10 +29,7 @@ export default class PromptCommand extends Command {
     await this.generatePrompt(args.name, flags.system)
   }
 
-  private async generatePrompt(
-    name: string,
-    systemPrompt?: string,
-  ): Promise<void> {
+  private generatePrompt(name: string, systemPrompt?: string): void {
     // Ensure the prompts directory exists
     const promptsDir = path.join(process.cwd(), 'prompts')
     if (!fs.existsSync(promptsDir)) {

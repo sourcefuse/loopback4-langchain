@@ -28,7 +28,7 @@ export default class SystemCommand extends Command {
     await this.generateSystem(args.name, flags.text)
   }
 
-  private async generateSystem(name: string, text: string): Promise<void> {
+  private generateSystem(name: string, text: string): void {
     // Ensure the systems directory exists
     const systemsDir = path.join(process.cwd(), 'systems')
     if (!fs.existsSync(systemsDir)) {

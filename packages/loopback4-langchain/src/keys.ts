@@ -1,13 +1,13 @@
 import {BindingKey} from '@loopback/core'
 import {RedisChatMessageHistory} from '@langchain/redis'
 import {BaseOutputParser} from '@langchain/core/output_parsers'
-import {BaseChatModel} from '@langchain/core/language_models/chat_models'
 import {LangChainOptions, LangChainService} from './services/langchain.service'
 import {RunnableLoader} from './runtime/runnable-loader'
 
 /**
  * Namespace for LangChain binding keys
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace LangChainBindings {
   /**
    * Binding key for LangChain service

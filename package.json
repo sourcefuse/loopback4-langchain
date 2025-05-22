@@ -63,7 +63,9 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.57",
     "@langchain/groq": "^0.2.2",
+    "@langchain/langgraph": "^0.2.73",
     "@loopback/boot": "^7.0.13",
     "@loopback/core": "^6.1.10",
     "@loopback/rest": "^14.0.13",

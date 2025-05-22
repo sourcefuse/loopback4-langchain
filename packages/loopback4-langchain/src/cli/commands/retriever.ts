@@ -30,10 +30,7 @@ export default class RetrieverCommand extends Command {
     await this.generateRetriever(args.name, flags.datasource)
   }
 
-  private async generateRetriever(
-    name: string,
-    datasource?: string,
-  ): Promise<void> {
+  private generateRetriever(name: string, datasource?: string): void {
     // Ensure the retrievers directory exists
     const retrieversDir = path.join(process.cwd(), 'retrievers')
     if (!fs.existsSync(retrieversDir)) {

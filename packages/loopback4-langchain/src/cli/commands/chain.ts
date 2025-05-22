@@ -29,10 +29,7 @@ export default class ChainCommand extends Command {
     await this.generateChain(args.name, flags.from)
   }
 
-  private async generateChain(
-    name: string,
-    runnableName?: string,
-  ): Promise<void> {
+  private generateChain(name: string, runnableName?: string): void {
     // Ensure the chains directory exists
     const chainsDir = path.join(process.cwd(), 'chains')
     if (!fs.existsSync(chainsDir)) {
